@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bug Detail — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- Highlight.js syntax highlighting library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body class="detail-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="login.html" class="nav-link" id="authNavLink">Sign In</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="prompts.html" class="mob-link">Prompt Vault</a>
+      <a href="favorites.html" class="mob-link">★ Favorites</a>
+      <a href="analytics.html" class="mob-link">Analytics</a>
+      <a href="login.html" class="mob-link" id="authMobLink">Sign In</a>
+    </div>
+  </nav>
+
+  <main class="detail-main">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">← Dashboard</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Bug #1042</span>
+    </div>
+
+    <!-- BUG HEADER -->
+    <div class="detail-header">
+      <div class="detail-header-top" id="bugHeader" style="display: none;">
+        <div class="detail-id-row">
+          <span class="detail-id" id="detailId">#...</span>
+          <span class="severity-badge" id="detailSeverity">SEVERITY</span>
+          <span class="status-badge" id="detailStatus">● status</span>
+        </div>
+        <div class="detail-actions">
+          <a href="#" class="btn btn-ghost btn-sm" id="editBtn">Edit</a>
+          <button class="btn btn-danger btn-sm" id="deleteBtn">Delete</button>
+          <button class="btn btn-primary btn-sm" id="resolveBtn">Mark Resolved</button>
+        </div>
+      </div>
+      <h1 class="detail-title" id="detailTitle">Loading...</h1>
+      <div class="detail-meta-row">
+        <span class="meta-item"><strong>Technology:</strong> <span id="detailTech">...</span></span>
+        <span class="meta-item"><strong>Tags:</strong> <span id="detailTags">...</span></span>
+        <span class="meta-item"><strong>Logged:</strong> <span id="detailDate">...</span></span>
+        <span class="meta-item">👤 <strong>By:</strong> <span id="detailCreator">alex.chen</span></span>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN LAYOUT -->
+    <div class="detail-layout" id="detailLayout" style="display: none;">
+
+      <!-- LEFT: MAIN CONTENT -->
+      <div class="detail-col-main">
+
+        <!-- ERROR MESSAGE -->
+        <section class="detail-section">
+          <div class="section-label">
+            <span class="label-icon">💥</span> Error Message
+          </div>
+          <div class="code-block">
+            <div class="code-block-bar">
+              <span class="code-lang">stack trace</span>
+              <button class="copy-btn" data-target="errorCode">Copy</button>
+            </div>
+            <pre id="errorCode">AuthenticationError: Token validation failed
+  at JWTMiddleware.verify (/src/middleware/auth.js:42:11)
+  at Layer.handle [as handle_request] (/node_modules/express/lib/router/layer.js:95:5)
+  at next (/node_modules/express/lib/router/route.js:144:13)
+
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Redis key: session:user:8821 → STILL EXISTS
+Expected: key should be deleted on POST /auth/logout</pre>
+          </div>
+        </section>
+
+        <!-- ENVIRONMENT -->
+        <section class="detail-section">
+          <div class="section-label">
+            <span class="label-icon">🖥</span> Environment
+          </div>
+          <div class="env-grid">
+            <div class="env-row"><span class="env-key">Runtime</span><span class="env-val">Node.js 20.11 / Express 4.18</span></div>
+            <div class="env-row"><span class="env-key">OS</span><span class="env-val">Ubuntu 22.04 (AWS EC2 t3.medium)</span></div>
+            <div class="env-row"><span class="env-key">Cache</span><span class="env-val">Redis 7.2 (ElastiCache)</span></div>
+            <div class="env-row"><span class="env-key">Auth Lib</span><span class="env-val">jsonwebtoken 9.0.2</span></div>
+            <div class="env-row"><span class="env-key">Branch</span><span class="env-val">main @ 3f8a1dc</span></div>
+            <div class="env-row"><span class="env-key">Reproduced</span><span class="env-val">✔ Local · ✔ Staging · ✔ Production</span></div>
+          </div>
+        </section>
+
+        <!-- GITHUB INTEGRATION -->
+        <section class="detail-section" id="githubSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">🐙</span> GitHub Integration
+          </div>
+          <div class="github-integration-box">
+            <div class="github-title">Linked GitHub Resources</div>
+            <div class="github-links" id="githubLinks">
+              <!-- Links populated dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ROOT CAUSE -->
+        <section class="detail-section" id="causeSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">🔍</span> Root Cause
+          </div>
+          <div class="prose-block">
+            <p id="causeText">Loading cause...</p>
+          </div>
+        </section>
+
+        <!-- AI SUGGESTION -->
+        <section class="detail-section ai-section">
+          <div class="section-label">
+            <span class="label-icon">🤖</span> AI Suggestion
+            <span class="ai-confidence" id="aiToolDisplay">92% confidence</span>
+          </div>
+          <div class="ai-block">
+            <!-- AI Prompt display box -->
+            <div id="aiPromptBox" style="display: none; margin-bottom: 16px;">
+              <label style="font-family: var(--mono); font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 4px;">AI Prompt Used:</label>
+              <pre id="aiPromptText" style="font-family: var(--mono); color: var(--cyan); white-space: pre-wrap; font-size: 0.88rem; max-height: 150px; overflow-y: auto; padding: 12px; background: var(--bg-3); border-radius: var(--radius); border: 1px solid var(--border);"></pre>
+            </div>
+            
+            <p class="ai-desc">Immediately delete the Redis session key on logout, and add the token's remaining TTL to a denylist set so in-flight tokens are also blocked:</p>
+            <div class="code-block" id="aiCodeBox">
+              <div class="code-block-bar">
+                <span class="code-lang">javascript</span>
+                <button class="copy-btn" data-target="aiCode">Copy</button>
+              </div>
+              <pre id="aiCode">// auth.js — logout handler
+router.post('/logout', authenticate, async (req, res) => {
+  const { userId, jti, exp } = req.user;
+
+  // 1. Delete the active session from Redis
+  await redis.del(`session:user:${userId}`);
+
+  // 2. Add token to denylist until its natural expiry
+  const ttl = exp - Math.floor(Date.now() / 1000);
+  if (ttl > 0) {
+    await redis.setEx(`denylist:${jti}`, ttl, '1');
+  }
+
+  // 3. Update JWTMiddleware.verify to check denylist
+  // if (await redis.exists(`denylist:${decoded.jti}`)) throw ...
+
+  res.json({ success: true, message: 'Logged out' });
+});</pre>
+            </div>
+            <div class="ai-verify-row">
+              <span class="ai-status unverified" id="aiVerifyStatus">● Not yet verified</span>
+              <button class="btn btn-ghost btn-sm" id="verifyBtn">Mark as Verified</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- VERIFIED FIX -->
+        <section class="detail-section" id="solutionSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">✅</span> Verified Fix
+          </div>
+          <div class="prose-block">
+            <p id="solutionText">Loading solution...</p>
+          </div>
+          <div class="code-block" id="solutionCodeBlock" style="display: none;">
+            <div class="code-block-bar">
+              <span class="code-lang">code</span>
+              <button class="copy-btn" data-target="solutionCode">Copy</button>
+            </div>
+            <pre id="solutionCode"></pre>
+          </div>
+        </section>
+
+        <!-- LEARNING NOTES -->
+        <section class="detail-section learning-section" id="learningSection" style="display: none;">
+          <div class="section-label"><span class="label-icon">📝</span> Learning Notes</div>
+          <div class="prose-block" id="learningNotesText"></div>
+        </section>
+
+        <!-- INTERVIEW PREPARATION -->
+        <section class="detail-section interview-section" id="interviewSection" style="display: none;">
+          <div class="section-label"><span class="label-icon">🎙️</span> Interview Explanation</div>
+          <div class="prose-block" id="interviewNotesText" style="line-height: 1.6; color: var(--text);"></div>
+        </section>
+
+      </div><!-- /detail-col-main -->
+
+      <!-- RIGHT: SIDEBAR -->
+      <aside class="detail-sidebar">
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Status</div>
+          <div class="sidebar-val">
+            <span class="status-badge large" id="sideStatus">● ...</span>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Priority</div>
+          <div class="sidebar-val">
+            <span class="severity-badge large" id="sidePriority">...</span>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Severity</div>
+          <div class="sidebar-val">
+            <span class="severity-badge large" id="sideSeverity">...</span>
+          </div>
+        </div>
+
+        <div class="sidebar-card" id="sideSolvedCard" style="display: none;">
+          <div class="sidebar-label">Date Solved</div>
+          <div class="sidebar-val sidebar-mono" id="sideSolvedDate" style="font-size:0.9rem;">...</div>
+        </div>
+
+        <div class="sidebar-card" id="sideLinksCard" style="display: none;">
+          <div class="sidebar-label">Related Links</div>
+          <div class="related-bugs" id="sideRelatedLinks" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Related Bugs</div>
+          <div class="related-bugs" id="relatedBugsContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Timeline</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <span class="tl-dot"></span>
+              <div><span class="tl-time">--</span><br/>Bug logged</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-dot"></span>
+              <div><span class="tl-time">--</span><br/>AI suggestion generated</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-dot"></span>
+              <div><span class="tl-time">--</span><br/>Fix implemented</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-dot"></span>
+              <div><span class="tl-time">--</span><br/>Deploy pending</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="dashboard.html" class="btn btn-ghost full-width">← Back to Dashboard</a>
+
+      </aside>
+
+    </div><!-- /detail-layout -->
+  </main>
+
+  <div id="loadingMsg" style="text-align: center; padding: 40px;">Loading bug details...</div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo"><span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span></span>
+      <span class="footer-copy">© 2025 BugLog. Built for engineers, by engineers.</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="bug-detail.html">Bug Detail</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const authNavLink = document.getElementById('authNavLink');
+      const authMobLink = document.getElementById('authMobLink');
+      const setLogout = (el) => {
+        if (!el) return;
+        el.textContent = 'Logout';
+        el.href = '#';
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+      };
+      setLogout(authNavLink);
+      setLogout(authMobLink);
+
+      /* ---- DATA LOADING ---- */
+      const params = new URLSearchParams(window.location.search);
+      const bugId = params.get('id');
+      
+      if (!bugId) {
+        document.getElementById('loadingMsg').textContent = 'Bug ID missing from URL.';
+        return;
+      }
+
+      const res = await getBug(bugId);
+      
+      if (!res.success) {
+        document.getElementById('loadingMsg').textContent = 'Failed to load bug: ' + res.message;
+        return;
+      }
+
+      const bug = res.data;
+      
+      // Populate fields
+      document.getElementById('loadingMsg').style.display = 'none';
+      document.getElementById('bugHeader').style.display = 'block';
+      document.getElementById('detailLayout').style.display = 'grid';
+
+      const shortId = '#' + bug._id.slice(-4);
+      document.getElementById('detailId').textContent = shortId;
+      document.title = `Bug ${shortId} - BugLog`;
+
+      // Creator dynamically loaded
+      const loggedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+      document.getElementById('detailCreator').textContent = loggedUser ? loggedUser.name : 'alex.chen';
+
+      const severity = bug.severity || 'low';
+      const priority = bug.priority || 'low';
+
+      document.getElementById('detailSeverity').className = `severity-badge ${severity}`;
+      document.getElementById('detailSeverity').textContent = severity.toUpperCase();
+      
+      document.getElementById('sideSeverity').className = `severity-badge ${severity} large`;
+      document.getElementById('sideSeverity').textContent = severity.toUpperCase();
+
+      document.getElementById('sidePriority').className = `severity-badge ${priority} large`;
+      document.getElementById('sidePriority').textContent = priority.toUpperCase();
+
+      document.getElementById('detailStatus').className = `status-badge ${bug.status}`;
+      document.getElementById('detailStatus').textContent = `● ${bug.status}`;
+      
+      document.getElementById('sideStatus').className = `status-badge ${bug.status} large`;
+      document.getElementById('sideStatus').textContent = `● ${bug.status}`;
+
+      document.getElementById('detailTitle').textContent = bug.title;
+      document.getElementById('detailTech').textContent = bug.technology || 'N/A';
+      document.getElementById('detailTags').textContent = (bug.tags || []).join(', ');
+      document.getElementById('detailDate').textContent = new Date(bug.createdAt).toLocaleString();
+
+      document.getElementById('errorCode').textContent = bug.errorMessage;
+
+      if (bug.rootCause || bug.cause) {
+        document.getElementById('causeSection').style.display = 'block';
+        document.getElementById('causeText').textContent = bug.rootCause || bug.cause;
+      }
+
+      if (bug.verifiedFinalFix || bug.solution) {
+        document.getElementById('solutionSection').style.display = 'block';
+        document.getElementById('solutionText').textContent = bug.verifiedFinalFix || bug.solution;
+        if (bug.codeSnippet) {
+          document.getElementById('solutionCodeBlock').style.display = 'block';
+          document.getElementById('solutionCode').textContent = bug.codeSnippet;
+        }
+      }
+
+      if (bug.personalLearning || bug.learningNotes) {
+        document.getElementById('learningSection').style.display = 'block';
+        document.getElementById('learningNotesText').innerHTML = (bug.personalLearning || bug.learningNotes).replace(/\n/g, '<br>');
+      }
+
+      if (bug.interviewExplanation) {
+        document.getElementById('interviewSection').style.display = 'block';
+        document.getElementById('interviewNotesText').innerHTML = bug.interviewExplanation.replace(/\n/g, '<br>');
+      }
+
+      // Populate AI Suggestion dynamically from backend object
+      if (bug.aiSuggestedSolution || bug.aiSuggestion) {
+        document.querySelector('.ai-desc').textContent = bug.aiSuggestedSolution || bug.aiSuggestion;
+      }
+      if (bug.aiSuggestionCode) {
+        document.getElementById('aiCode').textContent = bug.aiSuggestionCode;
+      } else if (bug.aiSuggestedSolution) {
+        // Hide default codebox if we had a custom text solution
+        document.getElementById('aiCodeBox').style.display = 'none';
+      }
+
+      if (bug.aiPrompt) {
+        document.getElementById('aiPromptBox').style.display = 'block';
+        document.getElementById('aiPromptText').textContent = bug.aiPrompt;
+      }
+
+      if (bug.aiTool) {
+        document.getElementById('aiToolDisplay').textContent = `${bug.aiTool} assistant`;
+      } else {
+        document.getElementById('aiToolDisplay').textContent = 'AI Suggestion';
+      }
+
+      // Populate AI verified status
+      const statusEl = document.getElementById('aiVerifyStatus');
+      const verifyBtn = document.getElementById('verifyBtn');
+      if (statusEl && verifyBtn) {
+        const setVerifiedState = (verified) => {
+          if (verified) {
+            statusEl.classList.remove('unverified');
+            statusEl.classList.add('verified');
+            statusEl.textContent = '✔ Verified by you';
+            verifyBtn.textContent = 'Undo Verify';
+          } else {
+            statusEl.classList.remove('verified');
+            statusEl.classList.add('unverified');
+            statusEl.textContent = '● Not yet verified';
+            verifyBtn.textContent = 'Mark as Verified';
+          }
+        };
+
+        setVerifiedState(bug.isAiVerified);
+
+        verifyBtn.addEventListener('click', async () => {
+          const isVerified = statusEl.classList.contains('verified');
+          const nextState = !isVerified;
+
+          const updateRes = await updateBug(bug._id, { isAiVerified: nextState });
+          if (updateRes.success) {
+            setVerifiedState(nextState);
+            if (nextState) {
+              showToast('AI suggestion marked as verified!', 'success');
+              // Brief flash animation
+              statusEl.style.transition = 'transform 0.2s ease';
+              statusEl.style.transform = 'scale(1.08)';
+              setTimeout(() => { statusEl.style.transform = ''; }, 200);
+            } else {
+              showToast('AI suggestion verification undone.', 'info');
+            }
+          } else {
+            showToast('Failed to update verification status.', 'error');
+          }
+        });
+      }
+
+      // Solved Date sidebar
+      if (bug.dateSolved) {
+        document.getElementById('sideSolvedCard').style.display = 'block';
+        document.getElementById('sideSolvedDate').textContent = new Date(bug.dateSolved).toLocaleDateString();
+      }
+
+      // Related Links sidebar
+      if (bug.relatedLinks && bug.relatedLinks.length > 0) {
+        document.getElementById('sideLinksCard').style.display = 'block';
+        const sideRelatedLinks = document.getElementById('sideRelatedLinks');
+        sideRelatedLinks.innerHTML = bug.relatedLinks.map(link => `
+          <a href="${link}" target="_blank" class="related-link" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; display: block;" title="${link}">🔗 ${link.replace(/^https?:\/\/(?:www\.)?/, '')}</a>
+        `).join('');
+      }
+
+      // Populate timeline dates dynamically
+      const createdDate = new Date(bug.createdAt);
+      const timelineTimes = document.querySelectorAll('.timeline .tl-time');
+      if (timelineTimes.length >= 4) {
+        timelineTimes[0].textContent = createdDate.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        
+        const aiTime = new Date(createdDate.getTime() + 5 * 60 * 1000);
+        timelineTimes[1].textContent = aiTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+        if (bug.status === 'resolved' || bug.status === 'closed') {
+          const resolvedDate = bug.dateSolved ? new Date(bug.dateSolved) : new Date(bug.updatedAt);
+          timelineTimes[2].textContent = resolvedDate.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+          timelineTimes[3].textContent = new Date(resolvedDate.getTime() + 10 * 60 * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+          document.querySelectorAll('.timeline .tl-dot').forEach(dot => dot.classList.add('active'));
+        } else {
+          timelineTimes[2].parentNode.innerHTML = `<span class="tl-time">--</span><br/>Fix pending`;
+          timelineTimes[3].parentNode.innerHTML = `<span class="tl-time">--</span><br/>Deploy pending`;
+          const dots = document.querySelectorAll('.timeline .tl-dot');
+          dots[2].classList.remove('active');
+          dots[3].classList.remove('active');
+        }
+      }
+
+      // Load related bugs dynamically
+      const relatedRes = await getBugs(`technology=${encodeURIComponent(bug.technology || '')}&limit=4`);
+      if (relatedRes.success) {
+        const relatedContainer = document.getElementById('relatedBugsContainer');
+        if (relatedContainer) {
+          const relatedBugs = relatedRes.data.filter(b => b._id !== bug._id).slice(0, 3);
+          if (relatedBugs.length > 0) {
+            relatedContainer.innerHTML = relatedBugs.map(b => `
+              <a href="bug-detail.html?id=${b._id}" class="related-link">#${b._id.slice(-4)} — ${b.title}</a>
+            `).join('');
+          } else {
+            const recentRes = await getBugs('limit=4');
+            if (recentRes.success) {
+              const recentBugs = recentRes.data.filter(b => b._id !== bug._id).slice(0, 3);
+              if (recentBugs.length > 0) {
+                relatedContainer.innerHTML = recentBugs.map(b => `
+                  <a href="bug-detail.html?id=${b._id}" class="related-link">#${b._id.slice(-4)} — ${b.title}</a>
+                `).join('');
+              } else {
+                relatedContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.8rem; margin:0;">No related bugs found.</p>';
+              }
+            }
+          }
+        }
+      }
+
+      // Populate GitHub fields
+      if (bug.githubRepo || bug.githubCommit || bug.githubIssue || bug.githubPR) {
+        document.getElementById('githubSection').style.display = 'block';
+        const linksContainer = document.getElementById('githubLinks');
+        let linksHtml = '';
+        if (bug.githubRepo) {
+          linksHtml += `<div class="github-link-item"><strong>Repository:</strong> <a href="https://github.com/${bug.githubRepo}" target="_blank">${bug.githubRepo}</a></div>`;
+        }
+        if (bug.githubCommit) {
+          linksHtml += `<div class="github-link-item"><strong>Commit:</strong> <a href="https://github.com/${bug.githubRepo || ''}/commit/${bug.githubCommit}" target="_blank">${bug.githubCommit.slice(0, 7)}</a></div>`;
+        }
+        if (bug.githubIssue) {
+          linksHtml += `<div class="github-link-item"><strong>Issue:</strong> <a href="https://github.com/${bug.githubRepo || ''}/issues/${bug.githubIssue}" target="_blank">#${bug.githubIssue}</a></div>`;
+        }
+        if (bug.githubPR) {
+          linksHtml += `<div class="github-link-item"><strong>Pull Request:</strong> <a href="https://github.com/${bug.githubRepo || ''}/pull/${bug.githubPR}" target="_blank">PR #${bug.githubPR}</a></div>`;
+        }
+        linksContainer.innerHTML = linksHtml;
+      }
+
+      // Trigger Highlight.js formatting
+      if (window.hljs) {
+        hljs.highlightAll();
+      }
+
+      // Actions
+      const editBtn = document.getElementById('editBtn');
+      if (editBtn) {
+        editBtn.href = `edit-bug.html?id=${bug._id}`;
+      }
+
+      const resolveBtn = document.getElementById('resolveBtn');
+      if (bug.status === 'resolved') {
+        resolveBtn.style.display = 'none';
+      } else {
+        resolveBtn.addEventListener('click', async () => {
+          const updateRes = await updateBug(bug._id, { status: 'resolved', dateSolved: new Date().toISOString() });
+          if (updateRes.success) {
+            showToast('Bug resolved successfully!', 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast('Failed to resolve bug: ' + updateRes.message, 'error');
+          }
+        });
+      }
+
+      document.getElementById('deleteBtn').addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this bug?')) {
+          const delRes = await deleteBug(bug._id);
+          if (delRes.success) {
+            showToast('Bug deleted successfully!', 'success');
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 1000);
+          } else {
+            showToast('Failed to delete bug: ' + delRes.message, 'error');
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Detail — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- Highlight.js syntax highlighting library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body class="detail-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="detail-main">
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="prompts.html">← Prompt Vault</a>
+      <span class="breadcrumb-sep">/</span>
+      <span id="breadcrumbId">Prompt Details</span>
+    </div>
+
+    <!-- PROMPT HEADER -->
+    <div class="detail-header">
+      <div class="detail-header-top" id="promptHeader" style="display: none;">
+        <div class="detail-id-row">
+          <span class="severity-badge critical" id="detailRating" style="background: var(--bg-3); border-color: var(--amber); color: var(--amber);">★★★★★</span>
+          <span class="status-badge resolved" id="detailTool">● Gemini</span>
+        </div>
+        <div class="detail-actions">
+          <button class="btn btn-ghost btn-sm" id="favoriteBtn">★ Favorite</button>
+          <a href="#" class="btn btn-ghost btn-sm" id="editBtn">Edit</a>
+          <button class="btn btn-danger btn-sm" id="deleteBtn">Delete</button>
+        </div>
+      </div>
+      <h1 class="detail-title" id="detailCategory" style="font-size: 1.8rem; margin-top: 12px;">Category Name</h1>
+      <div class="detail-meta-row">
+        <span class="meta-item"><strong>Tags:</strong> <span id="detailTags">None</span></span>
+        <span class="meta-item"><strong>Logged:</strong> <span id="detailDate">N/A</span></span>
+        <span class="meta-item">👤 <strong>By:</strong> <span id="detailCreator">You</span></span>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN LAYOUT -->
+    <div class="detail-layout" id="detailLayout" style="display: none;">
+      <!-- LEFT: MAIN CONTENT -->
+      <div class="detail-col-main">
+        <!-- PROMPT TEXT -->
+        <section class="detail-section">
+          <div class="section-label">
+            <span class="label-icon">💬</span> Prompt Text
+          </div>
+          <div class="code-block">
+            <div class="code-block-bar">
+              <span class="code-lang">prompt</span>
+              <button class="copy-btn" id="copyPromptBtn">Copy</button>
+            </div>
+            <pre><code id="promptText" class="language-markdown"></code></pre>
+          </div>
+        </section>
+
+        <!-- AI SUGGESTED SOLUTION -->
+        <section class="detail-section" id="aiSuggestionSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">🤖</span> AI Suggested Solution
+          </div>
+          <div class="code-block">
+            <div class="code-block-bar">
+              <span class="code-lang">suggestion</span>
+              <button class="copy-btn" id="copySuggestionBtn">Copy</button>
+            </div>
+            <pre><code id="aiSuggestionText" class="language-javascript"></code></pre>
+          </div>
+        </section>
+
+        <!-- VERIFIED SOLUTION -->
+        <section class="detail-section" id="verifiedSolutionSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">✅</span> Verified Solution
+          </div>
+          <div class="code-block">
+            <div class="code-block-bar">
+              <span class="code-lang">verified solution</span>
+              <button class="copy-btn" id="copySolutionBtn">Copy</button>
+            </div>
+            <pre><code id="verifiedSolutionText" class="language-javascript"></code></pre>
+          </div>
+        </section>
+
+        <!-- OUTCOME -->
+        <section class="detail-section" id="outcomeSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">📝</span> Outcome / Response Summary
+          </div>
+          <div class="prose-block">
+            <p id="outcomeText"></p>
+          </div>
+        </section>
+
+        <!-- NOTES -->
+        <section class="detail-section" id="notesSection" style="display: none;">
+          <div class="section-label">
+            <span class="label-icon">💡</span> Notes & Lessons
+          </div>
+          <div class="prose-block">
+            <p id="notesText"></p>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <aside class="detail-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-label">Tool Used</div>
+          <div class="sidebar-val" id="sideTool" style="font-family: var(--mono); color: var(--cyan);">Gemini</div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Rating</div>
+          <div class="sidebar-val" id="sideRating" style="color: var(--amber);">★★★★★</div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">Category</div>
+          <div class="sidebar-val" id="sideCategory" style="font-size: 0.95rem;">General</div>
+        </div>
+
+        <a href="prompts.html" class="btn btn-ghost full-width">← Back to Vault</a>
+      </aside>
+    </div>
+  </main>
+
+  <div id="loadingMsg" style="text-align: center; padding: 40px;">Loading prompt details...</div>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      document.getElementById('authNavLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const promptId = params.get('id');
+
+      if (!promptId) {
+        document.getElementById('loadingMsg').textContent = 'Prompt ID missing from URL.';
+        return;
+      }
+
+      // Load prompt details
+      const res = await getPrompt(promptId);
+      if (!res.success) {
+        document.getElementById('loadingMsg').textContent = 'Failed to load prompt: ' + res.message;
+        return;
+      }
+
+      const prompt = res.data;
+
+      document.getElementById('loadingMsg').style.display = 'none';
+      document.getElementById('promptHeader').style.display = 'block';
+      document.getElementById('detailLayout').style.display = 'grid';
+
+      // Set Breadcrumb and Title
+      document.getElementById('breadcrumbId').textContent = 'Prompt details';
+      document.title = `Prompt Details — BugLog`;
+
+      // Set fields
+      const stars = '★'.repeat(prompt.effectivenessRating) + '☆'.repeat(5 - prompt.effectivenessRating);
+      document.getElementById('detailRating').textContent = stars;
+      document.getElementById('detailTool').textContent = `● ${prompt.aiTool}`;
+      document.getElementById('detailCategory').textContent = prompt.category || 'General Prompt';
+      document.getElementById('detailTags').textContent = (prompt.tags || []).join(', ') || 'None';
+      document.getElementById('detailDate').textContent = new Date(prompt.createdAt).toLocaleString();
+      document.getElementById('detailCreator').textContent = prompt.createdBy || 'You';
+
+      document.getElementById('sideTool').textContent = prompt.aiTool;
+      document.getElementById('sideRating').textContent = stars;
+      document.getElementById('sideCategory').textContent = prompt.category || 'General';
+
+      // Set code blocks
+      document.getElementById('promptText').textContent = prompt.prompt;
+
+      if (prompt.aiSuggestion) {
+        document.getElementById('aiSuggestionSection').style.display = 'block';
+        document.getElementById('aiSuggestionText').textContent = prompt.aiSuggestion;
+      }
+      if (prompt.verifiedSolution) {
+        document.getElementById('verifiedSolutionSection').style.display = 'block';
+        document.getElementById('verifiedSolutionText').textContent = prompt.verifiedSolution;
+      }
+      if (prompt.outcome) {
+        document.getElementById('outcomeSection').style.display = 'block';
+        document.getElementById('outcomeText').innerHTML = prompt.outcome.replace(/\n/g, '<br>');
+      }
+      if (prompt.notes) {
+        document.getElementById('notesSection').style.display = 'block';
+        document.getElementById('notesText').innerHTML = prompt.notes.replace(/\n/g, '<br>');
+      }
+
+      // Favorite toggle logic
+      const favoriteBtn = document.getElementById('favoriteBtn');
+      const updateFavoriteBtnText = (fav) => {
+        favoriteBtn.textContent = fav ? '★ Starred' : '☆ Favorite';
+        favoriteBtn.style.color = fav ? 'var(--yellow)' : '';
+        favoriteBtn.style.borderColor = fav ? 'var(--yellow)' : '';
+      };
+      updateFavoriteBtnText(prompt.isFavorited);
+
+      favoriteBtn.addEventListener('click', async () => {
+        const favRes = await toggleFavoritePrompt(prompt._id);
+        if (favRes.success) {
+          updateFavoriteBtnText(favRes.data.isFavorited);
+          showToast(favRes.data.isFavorited ? 'Prompt starred successfully!' : 'Prompt removed from stars.', 'success');
+        } else {
+          showToast('Failed to update favorite status.', 'error');
+        }
+      });
+
+      // Actions
+      document.getElementById('editBtn').href = `edit-prompt.html?id=${prompt._id}`;
+
+      document.getElementById('deleteBtn').addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this prompt?')) {
+          const delRes = await deletePrompt(prompt._id);
+          if (delRes.success) {
+            showToast('Prompt deleted successfully!', 'success');
+            setTimeout(() => {
+              window.location.href = 'prompts.html';
+            }, 1000);
+          } else {
+            showToast('Failed to delete prompt: ' + delRes.message, 'error');
+          }
+        }
+      });
+
+      // Copy helpers
+      const setupCopy = (btnId, textElId) => {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const txt = document.getElementById(textElId).textContent;
+          navigator.clipboard.writeText(txt).then(() => {
+            btn.textContent = 'Copied!';
+            btn.style.color = 'var(--green)';
+            setTimeout(() => {
+              btn.textContent = 'Copy';
+              btn.style.color = '';
+            }, 1800);
+          });
+        });
+      };
+      setupCopy('copyPromptBtn', 'promptText');
+      setupCopy('copySuggestionBtn', 'aiSuggestionText');
+      setupCopy('copySolutionBtn', 'verifiedSolutionText');
+
+      // Highlight syntax
+      if (window.hljs) {
+        hljs.highlightAll();
+      }
+    });
+  </script>
+</body>
+</html>

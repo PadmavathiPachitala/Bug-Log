@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Vault — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .prompt-detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(13, 15, 18, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-content {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: var(--bg-3);
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .modal-close {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--text-sub);
+    }
+    .modal-close:hover {
+      color: var(--text);
+    }
+    .flex-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .filter-select {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      outline: none;
+      font-family: var(--sans);
+    }
+    .filter-select:focus {
+      border-color: var(--amber);
+    }
+  </style>
+</head>
+<body class="dashboard-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link active">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="prompts.html" class="mob-link active">Prompt Vault</a>
+      <a href="favorites.html" class="mob-link">★ Favorites</a>
+      <a href="analytics.html" class="mob-link">Analytics</a>
+      <a href="#" class="mob-link" id="authMobLink">Logout</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- PAGE HEADER -->
+    <div class="dash-header">
+      <div>
+        <span class="section-tag">// prompt vault</span>
+        <h1 class="dash-title">AI Prompt Vault</h1>
+        <p class="dash-sub">Save and optimize your developer prompt library</p>
+      </div>
+      <a href="create-prompt.html" class="btn btn-primary">+ New Prompt</a>
+    </div>
+
+    <!-- SEARCH & FILTERS -->
+    <div class="search-bar-row">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          class="search-input"
+          id="promptSearch"
+          placeholder="Search prompts by content, category, tool..."
+        />
+      </div>
+      <div class="flex-row">
+        <select class="filter-select" id="toolFilter">
+          <option value="">All Tools</option>
+          <option value="Gemini">Gemini</option>
+          <option value="ChatGPT">ChatGPT</option>
+          <option value="Claude">Claude</option>
+          <option value="Copilot">GitHub Copilot</option>
+        </select>
+        <select class="filter-select" id="ratingFilter">
+          <option value="">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4+ Stars</option>
+          <option value="3">3+ Stars</option>
+        </select>
+        <select class="filter-select" id="sortSelect">
+          <option value="newest">Newest First</option>
+          <option value="rating-desc">Rating: High to Low</option>
+          <option value="rating-asc">Rating: Low to High</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PROMPTS GRID -->
+    <div class="prompt-grid" id="promptsGrid">
+      <!-- Loading Skeletons will go here -->
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">🔎</div>
+      <p>No prompts found matching your criteria.</p>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination-controls" id="paginationControls"></div>
+
+  </main>
+
+  <!-- DETAIL MODAL -->
+  <div class="prompt-detail-modal" id="promptModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="section-title" id="modalTitle" style="font-size: 1.3rem;">Prompt Details</h2>
+        <span class="modal-close" id="modalClose">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta">
+          <div><strong>AI Tool:</strong> <span id="modalTool">--</span></div>
+          <div><strong>Category:</strong> <span id="modalCategory">--</span></div>
+          <div><strong>Rating:</strong> <span id="modalRating" style="color: var(--yellow);">--</span></div>
+          <div><strong>Created By:</strong> <span id="modalCreator">--</span></div>
+        </div>
+        <div>
+          <label style="font-family: var(--mono); font-size: 0.8rem; color: var(--text-sub);">Prompt:</label>
+          <div class="code-block" style="margin-top: 6px;">
+            <div class="code-block-bar">
+              <span class="code-lang">prompt</span>
+              <button class="copy-btn" id="modalCopyBtn">Copy</button>
+            </div>
+            <pre id="modalPromptText" style="font-family: var(--mono); color: var(--cyan); white-space: pre-wrap; font-size: 0.88rem; max-height: 200px; overflow-y: auto; padding: 12px; background: var(--bg-3); border-radius: var(--radius);"></pre>
+          </div>
+        </div>
+        <div id="modalOutcomeBox" style="display:none;">
+          <label style="font-family: var(--mono); font-size: 0.8rem; color: var(--text-sub);">Outcome:</label>
+          <p id="modalOutcome" style="background: var(--bg-3); padding: 10px; border-radius: var(--radius); color: var(--text); border: 1px solid var(--border); margin-top: 6px;"></p>
+        </div>
+        <div id="modalNotesBox" style="display:none;">
+          <label style="font-family: var(--mono); font-size: 0.8rem; color: var(--text-sub);">Notes:</label>
+          <p id="modalNotes" style="background: var(--bg-3); padding: 10px; border-radius: var(--radius); color: var(--text); border: 1px solid var(--border); margin-top: 6px;"></p>
+        </div>
+        <div class="flex-row" style="margin-top: 12px; justify-content: flex-end; width: 100%;">
+          <button class="btn btn-danger btn-sm" id="modalDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    let searchQuery = '';
+    let toolFilter = '';
+    let ratingFilter = '';
+    let sortVal = 'newest';
+    let currentPage = 1;
+    let selectedPromptId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout triggers
+      const setupLogout = (el) => {
+        if (!el) return;
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+      };
+      setupLogout(document.getElementById('authNavLink'));
+      setupLogout(document.getElementById('authMobLink'));
+
+      // Hamburger menu
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+          mobileMenu.classList.toggle('open');
+        });
+      }
+
+      // Load search filters and wire listeners
+      const searchInput = document.getElementById('promptSearch');
+      const toolSelect = document.getElementById('toolFilter');
+      const ratingSelect = document.getElementById('ratingFilter');
+      const sortSelect = document.getElementById('sortSelect');
+
+      // Debounce search
+      let searchTimeout;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchQuery = e.target.value.trim();
+          currentPage = 1;
+          fetchAndRenderPrompts();
+        }, 300);
+      });
+
+      toolSelect.addEventListener('change', (e) => {
+        toolFilter = e.target.value;
+        currentPage = 1;
+        fetchAndRenderPrompts();
+      });
+
+      ratingSelect.addEventListener('change', (e) => {
+        ratingFilter = e.target.value;
+        currentPage = 1;
+        fetchAndRenderPrompts();
+      });
+
+      sortSelect.addEventListener('change', (e) => {
+        sortVal = e.target.value;
+        currentPage = 1;
+        fetchAndRenderPrompts();
+      });
+
+      // Close modal
+      const modal = document.getElementById('promptModal');
+      const modalClose = document.getElementById('modalClose');
+      modalClose.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+
+      // Modal delete button
+      document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
+        if (selectedPromptId && confirm('Are you sure you want to delete this prompt?')) {
+          const res = await deletePrompt(selectedPromptId);
+          if (res.success) {
+            modal.style.display = 'none';
+            showToast('Prompt deleted successfully!', 'success');
+            fetchAndRenderPrompts();
+          } else {
+            showToast('Failed to delete prompt: ' + res.message, 'error');
+          }
+        }
+      });
+
+      // Modal copy button
+      document.getElementById('modalCopyBtn').addEventListener('click', () => {
+        const text = document.getElementById('modalPromptText').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('modalCopyBtn');
+          btn.textContent = 'Copied!';
+          btn.style.color = 'var(--green)';
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.color = '';
+          }, 1800);
+        });
+      });
+
+      fetchAndRenderPrompts();
+    });
+
+    async function fetchAndRenderPrompts() {
+      const grid = document.getElementById('promptsGrid');
+      const emptyState = document.getElementById('emptyState');
+      
+      // Render Skeletons
+      grid.innerHTML = Array(3).fill(0).map(() => `
+        <div class="skeleton-card skeleton">
+          <div class="skeleton-title skeleton"></div>
+          <div class="skeleton-text skeleton" style="height: 60px;"></div>
+          <div class="skeleton-text skeleton" style="width: 40%;"></div>
+        </div>
+      `).join('');
+      emptyState.style.display = 'none';
+
+      // Build params
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (toolFilter) params.append('aiTool', toolFilter);
+      if (ratingFilter) params.append('rating', ratingFilter);
+      if (sortVal === 'rating-desc') params.append('sort', 'rating-desc');
+      if (sortVal === 'rating-asc') params.append('sort', 'rating-asc');
+      params.append('page', currentPage);
+      params.append('limit', '9');
+
+      const res = await getPrompts(params.toString());
+      if (res.success) {
+        renderPrompts(res.data);
+        renderPagination(res.pagination);
+      } else {
+        grid.innerHTML = `<p style="color:var(--red); padding: 20px; text-align: center;">Failed to load prompts: ${res.message}</p>`;
+      }
+    }
+
+    function renderPrompts(prompts) {
+      const grid = document.getElementById('promptsGrid');
+      const emptyState = document.getElementById('emptyState');
+      grid.innerHTML = '';
+
+      if (!prompts || prompts.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      prompts.forEach(p => {
+        const ratingStars = '★'.repeat(p.effectivenessRating) + '☆'.repeat(5 - p.effectivenessRating);
+        const tagsHtml = (p.tags || []).map(t => `<span class="tag" style="font-size:0.75rem; padding: 2px 6px;">${t}</span>`).join(' ');
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+        card.innerHTML = `
+          <div class="prompt-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="prompt-tool">${p.aiTool}</span>
+              <button class="favorite-btn ${p.isFavorited ? 'favorited' : ''}" data-prompt-id="${p._id}" title="Toggle Favorite" style="background: none; border: none; cursor: pointer; color: var(--text-sub); font-size: 1.2rem; padding: 0; line-height: 1; transition: color 0.2s;">★</button>
+            </div>
+            <span class="prompt-rating" style="color: var(--yellow);">${ratingStars}</span>
+          </div>
+          <div class="prompt-text">${escapeHTML(p.prompt)}</div>
+          <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;">
+            ${tagsHtml}
+          </div>
+          <div class="prompt-card-footer" style="margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border);">
+            <span class="prompt-category">// ${p.category || 'general'}</span>
+            <span class="prompt-date">${new Date(p.createdAt).toLocaleDateString()}</span>
+          </div>
+        `;
+
+        card.querySelector('.favorite-btn').addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const res = await toggleFavoritePrompt(p._id);
+          if (res.success) {
+            e.target.classList.toggle('favorited', res.data.isFavorited);
+            showToast(res.data.isFavorited ? 'Prompt starred successfully!' : 'Prompt removed from stars.', 'success');
+          } else {
+            showToast('Failed to update favorite status.', 'error');
+          }
+        });
+
+        card.addEventListener('click', () => {
+          window.location.href = `prompt-detail.html?id=${p._id}`;
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    function renderPagination(pagination) {
+      const container = document.getElementById('paginationControls');
+      if (!container || !pagination || pagination.totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      if (pagination.currentPage > 1) {
+        html += `<button class="pagination-btn" data-page="${pagination.currentPage - 1}">← Prev</button>`;
+      }
+      for (let i = 1; i <= pagination.totalPages; i++) {
+        html += `<button class="pagination-btn ${i === pagination.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      if (pagination.currentPage < pagination.totalPages) {
+        html += `<button class="pagination-btn" data-page="${pagination.currentPage + 1}">Next →</button>`;
+      }
+      container.innerHTML = html;
+
+      container.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          currentPage = parseInt(e.target.dataset.page, 10);
+          fetchAndRenderPrompts();
+        });
+      });
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>

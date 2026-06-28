@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Bug — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="create-container">
+      <h1 class="section-title" style="margin-bottom: 24px;">Edit Bug</h1>
+      <div class="error-msg" id="errorMsg"></div>
+      <form id="editBugForm">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" required />
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="priority">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Error Message / Excerpt</label>
+          <textarea id="errorMessage" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Technology</label>
+          <input type="text" id="technology" />
+        </div>
+        <div class="form-group">
+          <label>Tags (comma separated)</label>
+          <input type="text" id="tags" />
+        </div>
+        <div class="form-group">
+          <label>Root Cause</label>
+          <textarea id="cause"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Verified Solution / Fix</label>
+          <textarea id="solution"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Code Snippet</label>
+          <textarea id="codeSnippet" style="font-family: var(--mono); color: var(--cyan);"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Personal Learning (Takeaway)</label>
+          <textarea id="learningNotes" placeholder="What did you learn from this?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="status">
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+
+        <div style="margin: 24px 0 12px; border-top: 1px dashed var(--border); padding-top: 20px;">
+          <h3 style="font-size: 0.95rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px;">🤖 AI Assistance Context</h3>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>AI Tool Used</label>
+            <select id="aiTool">
+              <option value="">None / Other</option>
+              <option value="Gemini">Gemini</option>
+              <option value="ChatGPT">ChatGPT</option>
+              <option value="Claude">Claude</option>
+              <option value="Copilot">GitHub Copilot</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date Solved</label>
+            <input type="date" id="dateSolved" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>AI Prompt</label>
+          <textarea id="aiPrompt" placeholder="What prompt did you send to the AI?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>AI Suggested Solution</label>
+          <textarea id="aiSuggestedSolution" placeholder="What did the AI suggest?"></textarea>
+        </div>
+
+        <div style="margin: 24px 0 12px; border-top: 1px dashed var(--border); padding-top: 20px;">
+          <h3 style="font-size: 0.95rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px;">📝 Interview Preparation</h3>
+        </div>
+        <div class="form-group">
+          <label>Interview Explanation (Explain to an interviewer: cause, AI suggested vs final choice, learnings)</label>
+          <textarea id="interviewExplanation" placeholder="Summarize this bug for a technical interview..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Related Links (comma separated)</label>
+          <input type="text" id="relatedLinks" placeholder="https://stackoverflow.com/..., https://github.com/..." />
+        </div>
+
+        <div style="margin: 24px 0 12px; border-top: 1px dashed var(--border); padding-top: 20px;">
+          <h3 style="font-size: 0.95rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px;">🐙 GitHub Integration (optional)</h3>
+        </div>
+        <div class="form-group">
+          <label>Repository (owner/repo)</label>
+          <input type="text" id="githubRepo" placeholder="e.g. google/adk" />
+        </div>
+        <div class="form-group">
+          <label>Commit Hash</label>
+          <input type="text" id="githubCommit" placeholder="e.g. 7f3a8b2" />
+        </div>
+        <div class="form-group">
+          <label>Issue Number / ID</label>
+          <input type="text" id="githubIssue" placeholder="e.g. 1042" />
+        </div>
+        <div class="form-group">
+          <label>Pull Request Number / ID</label>
+          <input type="text" id="githubPR" placeholder="e.g. 847" />
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('authNavLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const bugId = params.get('id');
+      
+      if (!bugId) {
+        document.getElementById('errorMsg').textContent = 'Bug ID missing from URL.';
+        document.getElementById('errorMsg').style.display = 'block';
+        return;
+      }
+
+      // Fetch bug data and populate the form
+      const res = await getBug(bugId);
+      if (res.success) {
+        const bug = res.data;
+        document.getElementById('title').value = bug.title || '';
+        document.getElementById('errorMessage').value = bug.errorMessage || '';
+        document.getElementById('technology').value = bug.technology || '';
+        document.getElementById('tags').value = (bug.tags || []).join(', ');
+        document.getElementById('cause').value = bug.rootCause || bug.cause || '';
+        document.getElementById('solution').value = bug.verifiedFinalFix || bug.solution || '';
+        document.getElementById('codeSnippet').value = bug.codeSnippet || '';
+        document.getElementById('learningNotes').value = bug.personalLearning || bug.learningNotes || '';
+        document.getElementById('status').value = bug.status || 'open';
+        document.getElementById('githubRepo').value = bug.githubRepo || '';
+        document.getElementById('githubCommit').value = bug.githubCommit || '';
+        document.getElementById('githubIssue').value = bug.githubIssue || '';
+        document.getElementById('githubPR').value = bug.githubPR || '';
+
+        // New fields populating
+        document.getElementById('priority').value = bug.priority || bug.severity || 'low';
+        document.getElementById('aiTool').value = bug.aiTool || '';
+        document.getElementById('aiPrompt').value = bug.aiPrompt || '';
+        document.getElementById('aiSuggestedSolution').value = bug.aiSuggestedSolution || '';
+        document.getElementById('interviewExplanation').value = bug.interviewExplanation || '';
+        document.getElementById('relatedLinks').value = (bug.relatedLinks || []).join(', ');
+        
+        if (bug.dateSolved) {
+          document.getElementById('dateSolved').value = new Date(bug.dateSolved).toISOString().split('T')[0];
+        }
+      } else {
+        document.getElementById('errorMsg').textContent = `Failed to load bug: ${res.message}`;
+        document.getElementById('errorMsg').style.display = 'block';
+      }
+
+      // Handle form submission
+      document.getElementById('editBugForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const dateInput = document.getElementById('dateSolved').value;
+        const dateSolved = dateInput ? new Date(dateInput).toISOString() : undefined;
+
+        const bugData = {
+          title: document.getElementById('title').value,
+          errorMessage: document.getElementById('errorMessage').value,
+          technology: document.getElementById('technology').value,
+          tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t),
+          cause: document.getElementById('cause').value,
+          solution: document.getElementById('solution').value,
+          codeSnippet: document.getElementById('codeSnippet').value,
+          learningNotes: document.getElementById('learningNotes').value,
+          status: document.getElementById('status').value,
+          githubRepo: document.getElementById('githubRepo').value.trim(),
+          githubCommit: document.getElementById('githubCommit').value.trim(),
+          githubIssue: document.getElementById('githubIssue').value.trim(),
+          githubPR: document.getElementById('githubPR').value.trim(),
+          
+          // New fields payload
+          priority: document.getElementById('priority').value,
+          severity: document.getElementById('priority').value,
+          aiTool: document.getElementById('aiTool').value,
+          aiPrompt: document.getElementById('aiPrompt').value,
+          aiSuggestedSolution: document.getElementById('aiSuggestedSolution').value,
+          interviewExplanation: document.getElementById('interviewExplanation').value,
+          dateSolved,
+          relatedLinks: document.getElementById('relatedLinks').value.split(',').map(l => l.trim()).filter(l => l)
+        };
+
+        const updateRes = await updateBug(bugId, bugData);
+        if (updateRes.success) {
+          window.location.href = `bug-detail.html?id=${bugId}`;
+        } else {
+          const err = document.getElementById('errorMsg');
+          err.textContent = updateRes.message || 'Failed to update bug';
+          err.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 Page Not Found — BugLog</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .error-container {
+      max-width: 500px;
+      margin: 120px auto;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .error-code {
+      font-family: var(--mono);
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--red);
+      text-shadow: 0 0 10px rgba(240, 80, 96, 0.3);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .error-terminal {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body class="landing-page">
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="error-container">
+      <div class="error-code">404</div>
+      <div class="error-terminal">
+        <span style="color: var(--red);">[ERROR]</span> Path resolution failure.<br/>
+        <span style="color: var(--text-sub);">URI:</span> ${window.location.pathname}<br/>
+        <span style="color: var(--text-sub);">Status:</span> Resource not found.<br/>
+        <span style="color: var(--text-sub);">Action:</span> Check URL spelling or return home.
+      </div>
+      <a href="dashboard.html" class="btn btn-primary">Return to Dashboard</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics & AI Insights — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="analytics.html" class="nav-link active">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="prompts.html" class="mob-link">Prompt Vault</a>
+      <a href="analytics.html" class="mob-link active">Analytics</a>
+      <a href="#" class="mob-link" id="authMobLink">Logout</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- PAGE HEADER -->
+    <div class="dash-header">
+      <div>
+        <span class="section-tag">// analytics & insights</span>
+        <h1 class="dash-title">Developer Insights</h1>
+        <p class="dash-sub">Heuristic learning trends and technology diagnostics</p>
+      </div>
+    </div>
+
+    <!-- STATS SUMMARY CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Bugs Logged</div>
+        <div class="stat-value" id="statTotal">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open Issues</div>
+        <div class="stat-value stat-red" id="statOpen">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Resolved Issues</div>
+        <div class="stat-value stat-green" id="statResolved">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Favorites Starred</div>
+        <div class="stat-value" id="statFav" style="color: var(--yellow);">--</div>
+      </div>
+    </div>
+
+    <!-- AI & LEARNING PERFORMANCE STATS -->
+    <div class="stats-grid" style="margin-top: 20px;">
+      <div class="stat-card">
+        <div class="stat-label">Learning Progress (Resolution %)</div>
+        <div class="stat-value" id="statLearningProgress" style="color: var(--blue);">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Prompt Effectiveness (Rating)</div>
+        <div class="stat-value" id="statPromptEffectiveness" style="color: var(--cyan);">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most Common Error</div>
+        <div class="stat-value" id="statCommonError" style="font-size: 1rem; color: var(--red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; font-family: var(--mono);" title="">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most Used AI Tool</div>
+        <div class="stat-value" id="statMostUsedAi" style="color: var(--green);">--</div>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN ANALYTICS LAYOUT -->
+    <div class="analytics-grid" id="analyticsContent" style="display:none;">
+      
+      <!-- LEFT COLUMN: CHARTS -->
+      <div class="detail-col-main" style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- MONTHLY CREATION TREND -->
+        <div class="chart-card">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--text);">Monthly Logging Frequency</h3>
+          <div class="chart-container">
+            <canvas id="monthlyTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- TECH BREAKDOWN -->
+        <div class="chart-card">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--text);">Bugs by Technology</h3>
+          <div class="chart-container">
+            <canvas id="techChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: AI INSIGHTS & TAKEAWAYS -->
+      <div class="analytics-sidebar">
+        
+        <!-- HEURISTIC LEARNING INSIGHTS -->
+        <div class="insight-card" style="border-color: var(--blue);">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--blue);">🎙️ Developer Learning Insights</h3>
+          <div class="insight-list" id="heuristicSentencesList" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Heuristic sentences will go here -->
+          </div>
+        </div>
+
+        <!-- LEARNING RECOMMENDATIONS -->
+        <div class="insight-card" style="border-color: var(--amber);">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--amber);">🤖 AI Learning Recommendations</h3>
+          <div class="insight-list" id="recommendationsList">
+            <!-- Learning recommendation topics will go here -->
+          </div>
+        </div>
+
+        <!-- STRENGTHS AND WEAKNESSES -->
+        <div class="insight-card" style="border-color: var(--green);">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--green);">💪 Debugging Strengths</h3>
+          <div class="insight-list" id="strengthsList">
+            <!-- Strengths list -->
+          </div>
+        </div>
+
+        <div class="insight-card" style="border-color: var(--red);">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--red);">⚠️ Development Weaknesses</h3>
+          <div class="insight-list" id="weaknessesList">
+            <!-- Weaknesses list -->
+          </div>
+        </div>
+
+        <!-- COMMON MISTAKES -->
+        <div class="insight-card">
+          <h3 class="section-title" style="font-size: 1.1rem; color: var(--text);">🔥 Most Common Mistakes</h3>
+          <div class="insight-list" id="mistakesList">
+            <!-- Common mistakes list -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- LOADING STATE -->
+    <div id="loadingState" style="text-align: center; padding: 60px;">
+      <p style="color: var(--text-sub);">Compiling aggregates and diagnostic reports...</p>
+    </div>
+
+  </main>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout triggers
+      const setupLogout = (el) => {
+        if (!el) return;
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+      };
+      setupLogout(document.getElementById('authNavLink'));
+      setupLogout(document.getElementById('authMobLink'));
+
+      // Hamburger menu
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+          mobileMenu.classList.toggle('open');
+        });
+      }
+
+      // Load analytics and learning insights
+      await loadAnalyticsData();
+    });
+
+    async function loadAnalyticsData() {
+      // 1. Fetch Analytics Aggregates
+      const res = await getAnalytics();
+      // 2. Fetch AI Insights
+      const insightsRes = await getLearningInsights();
+
+      if (res.success && insightsRes.success) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('analyticsContent').style.display = 'grid';
+
+        const stats = res.data.stats;
+        document.getElementById('statTotal').textContent = stats.total;
+        document.getElementById('statOpen').textContent = stats.open;
+        document.getElementById('statResolved').textContent = stats.resolved;
+        document.getElementById('statFav').textContent = stats.favorites;
+
+        // Render secondary stats
+        document.getElementById('statLearningProgress').textContent = `${stats.learningProgress}%`;
+        document.getElementById('statPromptEffectiveness').textContent = `${stats.promptEffectiveness} / 5`;
+        document.getElementById('statCommonError').textContent = stats.mostCommonError || 'None';
+        document.getElementById('statCommonError').title = stats.mostCommonError || '';
+        document.getElementById('statMostUsedAi').textContent = stats.mostUsedAiTool || 'None';
+
+        // Render Charts
+        renderMonthlyTrendChart(res.data.monthlyTrends);
+        renderTechChart(res.data.technologyDistribution);
+
+        // Render Heuristic Insights
+        renderHeuristicInsights(insightsRes.data);
+      } else {
+        document.getElementById('loadingState').innerHTML = `
+          <p style="color:var(--red); text-align: center;">Failed to load analytics: ${res.message || insightsRes.message}</p>
+        `;
+      }
+    }
+
+    function renderMonthlyTrendChart(trends) {
+      const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+      
+      const labels = trends.map(t => t.label);
+      const data = trends.map(t => t.count);
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length > 0 ? labels : ['No Data'],
+          datasets: [{
+            label: 'Bugs Logged',
+            data: data.length > 0 ? data : [0],
+            borderColor: '#f5a623',
+            backgroundColor: 'rgba(245, 166, 35, 0.1)',
+            fill: true,
+            borderWidth: 2,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              grid: { color: '#252a38' },
+              ticks: { color: '#8892aa', stepSize: 1 }
+            },
+            x: {
+              grid: { color: '#252a38' },
+              ticks: { color: '#8892aa' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTechChart(distribution) {
+      const ctx = document.getElementById('techChart').getContext('2d');
+
+      const labels = distribution.map(d => d._id);
+      const data = distribution.map(d => d.count);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels.length > 0 ? labels : ['No Data'],
+          datasets: [{
+            data: data.length > 0 ? data : [1],
+            backgroundColor: [
+              '#f5a623', '#3dd68c', '#5e9cf5', '#f05060', '#f5d623', '#8892aa'
+            ],
+            borderWidth: 1,
+            borderColor: '#13161c'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#e2e4ec', boxWidth: 12 }
+            }
+          }
+        }
+      });
+    }
+
+    function renderHeuristicInsights(insights) {
+      const recsList = document.getElementById('recommendationsList');
+      const strengthsList = document.getElementById('strengthsList');
+      const weaknessesList = document.getElementById('weaknessesList');
+      const mistakesList = document.getElementById('mistakesList');
+      const sentencesList = document.getElementById('heuristicSentencesList');
+
+      // AI Recommendations
+      recsList.innerHTML = insights.suggestedLearningTopics.map(topic => `
+        <div style="padding: 10px; background: var(--bg-3); border-radius: 6px; border-left: 3px solid var(--amber); font-size: 0.85rem; margin-bottom: 8px;">
+          💡 ${topic}
+        </div>
+      `).join('');
+
+      // Heuristic sentences
+      if (sentencesList && insights.sentences) {
+        sentencesList.innerHTML = insights.sentences.map(sentence => `
+          <div style="padding: 12px; background: var(--bg-3); border-radius: 6px; border-left: 3px solid var(--blue); font-size: 0.88rem; color: var(--text); display: flex; align-items: center; gap: 8px;">
+            <span>📢</span>
+            <span>${sentence}</span>
+          </div>
+        `).join('');
+      }
+
+      // Debugging Strengths
+      if (insights.strongestAreas.length === 0) {
+        strengthsList.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">Log and resolve more bugs to analyze strengths!</p>';
+      } else {
+        strengthsList.innerHTML = insights.strongestAreas.map(s => `
+          <div class="insight-item">
+            <span>${s.name}</span>
+            <span style="color: var(--green);">${s.resolutionRate}% resolution</span>
+          </div>
+        `).join('');
+      }
+
+      // Weaknesses
+      if (insights.weakestAreas.length === 0) {
+        weaknessesList.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">No weaknesses found yet. Great debugging!</p>';
+      } else {
+        weaknessesList.innerHTML = insights.weakestAreas.map(w => `
+          <div class="insight-item">
+            <span>${w.name}</span>
+            <span style="color: var(--red);">${w.openBugs} open / ${w.resolutionRate}% res.</span>
+          </div>
+        `).join('');
+      }
+
+      // Common Mistakes
+      if (insights.mostCommonMistakes.length === 0) {
+        mistakesList.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">Describe causes in your logs to extract mistakes.</p>';
+      } else {
+        mistakesList.innerHTML = insights.mostCommonMistakes.map(m => `
+          <div class="insight-item">
+            <span>${m.name}</span>
+            <span style="color: var(--amber);">${m.count} logs</span>
+          </div>
+        `).join('');
+      }
+    }
+  </script>
+</body>
+</html>

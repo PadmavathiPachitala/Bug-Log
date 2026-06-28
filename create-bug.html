@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Bug — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="create-container">
+      <h1 class="section-title" style="margin-bottom: 24px;">Log a New Bug</h1>
+      <div class="error-msg" id="errorMsg"></div>
+      <form id="createBugForm">
+        <div class="form-group">
+          <label>Error Message / Excerpt / Stack Trace</label>
+          <textarea id="errorMessage" required placeholder="Paste your error message or stack trace here..."></textarea>
+        </div>
+        <button type="button" class="btn btn-ghost" id="autoFillBtn" style="margin-bottom: 20px; align-self: flex-start; padding: 6px 12px; font-size: 0.82rem; border-color: var(--blue); color: var(--blue);">⚡ Auto-Fill from Error</button>
+        
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" required placeholder="e.g. JWT token not invalidated" />
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Collapsible Advanced Details Panel -->
+        <details id="advancedDetails" class="advanced-details">
+          <summary id="advancedSummary">📁 Add Advanced Context (Fix, Code, GitHub)...</summary>
+          <div class="details-content">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Technology</label>
+                <input type="text" id="technology" placeholder="e.g. Node.js, React" />
+              </div>
+              <div class="form-group">
+                <label>Tags (comma separated)</label>
+                <input type="text" id="tags" placeholder="api, auth, security" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Root Cause</label>
+              <textarea id="cause" placeholder="What was the root cause of the issue?"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Verified Solution / Fix</label>
+              <textarea id="solution" placeholder="How was the issue resolved?"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Code Snippet</label>
+              <textarea
+                id="codeSnippet"
+                placeholder="const fix = 'magic';"
+                style="font-family: var(--mono); color: var(--cyan);"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Personal Learning (Takeaway)</label>
+              <textarea id="learningNotes" placeholder="What would you tell your past self?"></textarea>
+            </div>
+
+            <div style="margin: 12px 0 4px; border-top: 1px dashed var(--border); padding-top: 16px;">
+              <h3 style="font-size: 0.85rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                <span>🤖</span> AI Assistance Context
+              </h3>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>AI Tool Used</label>
+                <select id="aiTool">
+                  <option value="">None / Other</option>
+                  <option value="Gemini">Gemini</option>
+                  <option value="ChatGPT">ChatGPT</option>
+                  <option value="Claude">Claude</option>
+                  <option value="Copilot">GitHub Copilot</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date Solved</label>
+                <input type="date" id="dateSolved" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>AI Prompt</label>
+              <textarea id="aiPrompt" placeholder="What prompt did you send to the AI?"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>AI Suggested Solution</label>
+              <textarea id="aiSuggestedSolution" placeholder="What did the AI suggest?"></textarea>
+            </div>
+
+            <div style="margin: 12px 0 4px; border-top: 1px dashed var(--border); padding-top: 16px;">
+              <h3 style="font-size: 0.85rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                <span>📝</span> Interview Preparation
+              </h3>
+            </div>
+
+            <div class="form-group">
+              <label>Interview Explanation (Explain to an interviewer: cause, AI suggested vs final choice, and learnings)</label>
+              <textarea id="interviewExplanation" placeholder="Summarize this bug for a technical interview..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Related Links (comma separated)</label>
+              <input type="text" id="relatedLinks" placeholder="https://stackoverflow.com/..., https://github.com/..." />
+            </div>
+
+            <div style="margin: 12px 0 4px; border-top: 1px dashed var(--border); padding-top: 16px;">
+              <h3 style="font-size: 0.85rem; font-family: var(--mono); color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                <span>🐙</span> GitHub Integration (Optional)
+              </h3>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Repository (owner/repo)</label>
+                <input type="text" id="githubRepo" placeholder="e.g. google/adk" />
+              </div>
+              <div class="form-group">
+                <label>Commit Hash</label>
+                <input type="text" id="githubCommit" placeholder="e.g. 7f3a8b2" />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Issue Number / ID</label>
+                <input type="text" id="githubIssue" placeholder="e.g. 1042" />
+              </div>
+              <div class="form-group">
+                <label>Pull Request Number / ID</label>
+                <input type="text" id="githubPR" placeholder="e.g. 847" />
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <button type="submit" class="btn btn-primary full-width" style="margin-top: 20px;">Submit Bug</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('authNavLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      // Auto-Fill Event Listener
+      document.getElementById('autoFillBtn').addEventListener('click', autoFillFromError);
+
+      // Auto-Fill on input/paste if structured fields are detected
+      document.getElementById('errorMessage').addEventListener('input', () => {
+        const val = document.getElementById('errorMessage').value.trim();
+        const lowerText = val.toLowerCase();
+        const keysToMatch = ['title:', 'error message:', 'technology:', 'tags:', 'cause:', 'solution:', 'code snippet:', 'repository:', 'commit hash:'];
+        const matchedKeysCount = keysToMatch.filter(k => lowerText.includes(k)).length;
+        if (matchedKeysCount >= 2) {
+          autoFillFromError();
+        }
+      });
+
+      document.getElementById('createBugForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const errorMessage = document.getElementById('errorMessage').value;
+        const technology = document.getElementById('technology').value;
+        const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t);
+        const cause = document.getElementById('cause').value;
+        const solution = document.getElementById('solution').value;
+        const codeSnippet = document.getElementById('codeSnippet').value;
+        const learningNotes = document.getElementById('learningNotes').value;
+        const githubRepo = document.getElementById('githubRepo').value.trim();
+        const githubCommit = document.getElementById('githubCommit').value.trim();
+        const githubIssue = document.getElementById('githubIssue').value.trim();
+        const githubPR = document.getElementById('githubPR').value.trim();
+
+        // New fields
+        const priority = document.getElementById('priority').value;
+        const aiTool = document.getElementById('aiTool').value;
+        const aiPrompt = document.getElementById('aiPrompt').value;
+        const aiSuggestedSolution = document.getElementById('aiSuggestedSolution').value;
+        const interviewExplanation = document.getElementById('interviewExplanation').value;
+        const dateSolvedInput = document.getElementById('dateSolved').value;
+        const dateSolved = dateSolvedInput ? new Date(dateSolvedInput).toISOString() : undefined;
+        const relatedLinks = document.getElementById('relatedLinks').value.split(',').map(l => l.trim()).filter(l => l);
+
+        const bugData = {
+          title,
+          errorMessage,
+          technology,
+          tags,
+          cause,
+          solution,
+          codeSnippet,
+          learningNotes,
+          githubRepo,
+          githubCommit,
+          githubIssue,
+          githubPR,
+          priority,
+          severity: priority, // compatibility mapping
+          aiTool,
+          aiPrompt,
+          aiSuggestedSolution,
+          interviewExplanation,
+          dateSolved,
+          relatedLinks,
+          status: 'open'
+        };
+
+        const res = await createBug(bugData);
+        if (res.success) {
+          window.location.href = 'dashboard.html';
+        } else {
+          const err = document.getElementById('errorMsg');
+          err.textContent = res.message || 'Failed to create bug';
+          err.style.display = 'block';
+        }
+      });
+    });
+
+    function autoFillFromError() {
+      const errorText = document.getElementById('errorMessage').value.trim();
+      if (!errorText) {
+        showToast('Please paste an error message or stack trace first!', 'warning');
+        return;
+      }
+
+      // Initialize default variables
+      let title = '';
+      let technology = '';
+      let tags = [];
+      let cause = '';
+      let solution = '';
+      let codeSnippet = '';
+      let githubRepo = '';
+      let githubCommit = '';
+      let githubIssue = '';
+      let githubPR = '';
+      let rawError = '';
+
+      const lowerText = errorText.toLowerCase();
+      const keysToMatch = ['title:', 'error message:', 'technology:', 'tags:', 'cause:', 'solution:', 'code snippet:', 'repository:', 'commit:'];
+      const matchedKeysCount = keysToMatch.filter(k => lowerText.includes(k)).length;
+
+      if (matchedKeysCount >= 2) {
+        // Structured block parsing
+        const extractField = (labelRegex, text) => {
+          const match = text.match(labelRegex);
+          return match ? match[1].trim() : '';
+        };
+
+        title = extractField(/(?:^|\n)Title:\s*(.*)/i, errorText);
+        rawError = extractField(/(?:^|\n)Error Message:\s*([\s\S]*?)(?=(?:\n(?:Title|Technology|Tags|Cause|Solution|Code Snippet|Repository|Commit Hash|Commit|Issue Number|Pull Request):)|$)/i, errorText);
+        technology = extractField(/(?:^|\n)Technology:\s*(.*)/i, errorText);
+        
+        const tagsStr = extractField(/(?:^|\n)Tags:\s*(.*)/i, errorText);
+        if (tagsStr) {
+          tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
+        }
+        
+        cause = extractField(/(?:^|\n)Cause:\s*([\s\S]*?)(?=(?:\n(?:Title|Error Message|Technology|Tags|Solution|Code Snippet|Repository|Commit Hash|Commit|Issue Number|Pull Request):)|$)/i, errorText);
+        solution = extractField(/(?:^|\n)Solution:\s*([\s\S]*?)(?=(?:\n(?:Title|Error Message|Technology|Tags|Cause|Code Snippet|Repository|Commit Hash|Commit|Issue Number|Pull Request):)|$)/i, errorText);
+        
+        const codeMatch = errorText.match(/(?:^|\n)Code Snippet:\s*([\s\S]*?)(?=(?:\n(?:Title|Error Message|Technology|Tags|Cause|Solution|Repository|Commit Hash|Commit|Issue Number|Pull Request):)|$)/i);
+        if (codeMatch) {
+          let code = codeMatch[1].trim();
+          code = code.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+          code = code.replace(/^(?:javascript|js|python|html|css|bash|json)\s*\n?/, '').trim();
+          codeSnippet = code;
+        }
+
+        githubRepo = extractField(/(?:^|\n)Repository:\s*(.*)/i, errorText);
+        githubCommit = extractField(/(?:^|\n)Commit Hash:\s*(.*)/i, errorText);
+        if (!githubCommit) {
+          githubCommit = extractField(/(?:^|\n)Commit:\s*(.*)/i, errorText);
+        }
+        githubIssue = extractField(/(?:^|\n)Issue Number(?:\s*\/|\s*ID)?:\s*(.*)/i, errorText);
+        if (!githubIssue) githubIssue = extractField(/(?:^|\n)Issue:\s*(.*)/i, errorText);
+        githubPR = extractField(/(?:^|\n)Pull Request(?:\s*\/|\s*ID)?:\s*(.*)/i, errorText);
+        if (!githubPR) githubPR = extractField(/(?:^|\n)PR:\s*(.*)/i, errorText);
+
+        if (rawError) {
+          document.getElementById('errorMessage').value = rawError;
+        }
+      } else {
+        // Fall back to raw error heuristics
+        const lower = lowerText;
+
+        if (lower.includes('cors') || lower.includes('access-control-allow-origin') || lower.includes('origin')) {
+          title = 'CORS Access-Control-Allow-Origin Missing';
+          technology = 'Node.js';
+          tags = ['cors', 'express', 'security'];
+          cause = 'Express server was running on port 5000 but CORS middleware was not initialized to accept credentials from localhost:8080.';
+          solution = 'Added cors middleware with credentials true.';
+          codeSnippet = `const corsOptions = {\n  origin: 'http://localhost:8080',\n  credentials: true\n};\napp.use(cors(corsOptions));`;
+        } 
+        else if (lower.includes('jwt') || lower.includes('token') || lower.includes('jsonwebtoken') || lower.includes('auth')) {
+          title = 'JWT Token Authentication Failure';
+          technology = 'Node.js';
+          tags = ['auth', 'jwt', 'security'];
+          cause = 'Incoming bearer token was expired, missing, or headers were improperly formatted.';
+          solution = 'Extract Bearer token from authorization header or request cookies, and verify with sign key.';
+          codeSnippet = `const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;`;
+        }
+        else if (lower.includes('useeffect') || lower.includes('react') || lower.includes('loop-rendering') || lower.includes('hooks')) {
+          title = 'useEffect Infinite Render Loop';
+          technology = 'React';
+          tags = ['react', 'hooks', 'ui'];
+          cause = 'Triggering state updates inside a useEffect hook without passing a dependency array.';
+          solution = 'Add a clean dependency array as the second parameter to useEffect.';
+          codeSnippet = `useEffect(() => {\n  // Fetch or trigger logic here\n}, []); // <-- Dependency array stops the loop`;
+        }
+        else if (lower.includes('null') || lower.includes('undefined') || lower.includes('cannot read property') || lower.includes('typeerror')) {
+          title = 'TypeError: Cannot read property of undefined';
+          technology = 'JavaScript';
+          tags = ['typeerror', 'null-pointer', 'bug'];
+          cause = 'Accessing object subproperties or calling methods on an undefined variable reference.';
+          solution = 'Use safe optional chaining (?.) or add protective null/undefined guards.';
+          codeSnippet = `const value = object?.property || 'default';`;
+        }
+        else if (lower.includes('n+1') || lower.includes('query') || lower.includes('postgres') || lower.includes('sql') || lower.includes('database')) {
+          title = 'N+1 Database Query Overhead';
+          technology = 'SQL / Postgres';
+          tags = ['database', 'performance', 'query'];
+          cause = 'Looping over records and executing a separate database query for each child association.';
+          solution = 'Perform SQL JOINs, eager loading, or populate query parameters to fetch nested data.';
+        }
+      }
+
+      // Populate form fields
+      if (title) document.getElementById('title').value = title;
+      if (technology) document.getElementById('technology').value = technology;
+      if (tags.length > 0) document.getElementById('tags').value = tags.join(', ');
+      if (cause) document.getElementById('cause').value = cause;
+      if (solution) document.getElementById('solution').value = solution;
+      if (codeSnippet) document.getElementById('codeSnippet').value = codeSnippet;
+      if (githubRepo) document.getElementById('githubRepo').value = githubRepo;
+      if (githubCommit) document.getElementById('githubCommit').value = githubCommit;
+      if (githubIssue) document.getElementById('githubIssue').value = githubIssue;
+      if (githubPR) document.getElementById('githubPR').value = githubPR;
+
+      // Open advanced section on successful auto-fill so the user can inspect/edit, and show green badge
+      const details = document.getElementById('advancedDetails');
+      if (details) {
+        details.open = true;
+        const summary = document.getElementById('advancedSummary');
+        if (summary) {
+          summary.innerHTML = '📁 Advanced Context <span style="color: var(--green); margin-left: 8px;">(⚡ Auto-filled — review below)</span>';
+        }
+      }
+
+      showToast('Bug details parsed and auto-filled successfully!', 'success');
+    }
+</body>
+</html>

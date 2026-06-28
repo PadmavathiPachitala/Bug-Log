@@ -1,0 +1,9 @@
+{
+  "name": "buglog-frontend",
+  "version": "1.0.0",
+  "description": "BugLog frontend static deployment package",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {}
+}

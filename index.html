@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BugLog — Engineer's Debug Journal</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="landing-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <!-- This will be dynamically updated to 'Logout' by script -->
+        <a href="login.html" class="nav-link" id="authNavLink">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link active">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="login.html" class="mob-link" id="authMobLink">Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="badge-pill">v2.4.1 — now with AI suggestions</div>
+      <h1 class="hero-title">
+        Every bug<br />
+        <span class="accent-text">tells a story.</span><br />
+        Log it properly.
+      </h1>
+      <p class="hero-sub">
+        BugLog is the structured debug journal for engineers who want to stop solving the same problems twice. Capture errors, root causes, fixes, and learnings — all in one place.
+      </p>
+      <div class="hero-cta">
+        <a href="dashboard.html" class="btn btn-primary">Open Dashboard →</a>
+        <a href="bug-detail.html" class="btn btn-ghost">See a Bug Entry</a>
+      </div>
+      <div class="hero-terminal">
+        <div class="terminal-bar">
+          <span class="t-dot red"></span>
+          <span class="t-dot yellow"></span>
+          <span class="t-dot green"></span>
+          <span class="t-title">buglog — zsh</span>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+          <span class="t-prompt">$ </span><span class="t-cmd" id="typedCmd"></span><span class="t-cursor">▮</span>
+          <div class="t-output" id="termOutput" style="display:none">
+            <span class="t-green">✔</span> Bug #1042 logged successfully<br/>
+            <span class="t-amber">⚠</span> AI suggestion attached<br/>
+            <span class="t-green">✔</span> Severity: <span class="t-red">CRITICAL</span> → resolved<br/>
+            <span class="t-muted">— saved to /logs/2025-06-04/</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// features</span>
+        <h2 class="section-title">Built for the debugging loop</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon">⚡</div>
+          <h3>Structured Entries</h3>
+          <p>Log error messages, environment context, root cause, and fix — all in a consistent schema so nothing falls through the cracks.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🤖</div>
+          <h3>AI Suggestions</h3>
+          <p>Get intelligent fix suggestions surfaced directly in your bug entry. Attach, verify, and mark them resolved — all in one workflow.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔍</div>
+          <h3>Instant Search</h3>
+          <p>Find any bug by keyword, tag, error type, or severity. Stop digging through Slack threads and Stack Overflow bookmarks.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📊</div>
+          <h3>Dashboard Stats</h3>
+          <p>See your bug patterns at a glance. Track open vs resolved, severity breakdown, and most frequent error categories.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📝</div>
+          <h3>Learning Notes</h3>
+          <p>Add a "lessons learned" section to every entry. Build your own institutional knowledge base over time.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🏷️</div>
+          <h3>Tags & Filters</h3>
+          <p>Organize bugs by project, component, language, or custom tags. Filter and slice your log any way you need.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// workflow</span>
+        <h2 class="section-title">From chaos to clarity</h2>
+      </div>
+      <div class="steps-row">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h4>Encounter a bug</h4>
+          <p>Something breaks in production or local dev. Don't just fix it — log it.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h4>Fill the entry</h4>
+          <p>Paste the error, describe the context, and write down your initial hypothesis.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h4>Get AI help</h4>
+          <p>BugLog surfaces an AI suggestion. Verify it, tweak it, mark it confirmed.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <h4>Capture learnings</h4>
+          <p>Write what you'd tell your past self. Future-you (and your teammates) will thank you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="container cta-inner">
+      <div class="cta-text">
+        <h2>Ready to stop solving the same bug twice?</h2>
+        <p>Open your dashboard and start logging.</p>
+      </div>
+      <a href="dashboard.html" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo"><span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span></span>
+      <span class="footer-copy">© 2025 BugLog. Built for engineers, by engineers.</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="bug-detail.html">Bug Detail</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authNavLink = document.getElementById('authNavLink');
+      const authMobLink = document.getElementById('authMobLink');
+      if (isAuthenticated()) {
+        // Inject links into Desktop navigation
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+          const promptsLink = document.createElement('a');
+          promptsLink.href = 'prompts.html';
+          promptsLink.className = 'nav-link';
+          promptsLink.textContent = 'Prompt Vault';
+
+          const favoritesLink = document.createElement('a');
+          favoritesLink.href = 'favorites.html';
+          favoritesLink.className = 'nav-link';
+          favoritesLink.textContent = '★ Favorites';
+          
+          const analyticsLink = document.createElement('a');
+          analyticsLink.href = 'analytics.html';
+          analyticsLink.className = 'nav-link';
+          analyticsLink.textContent = 'Analytics';
+          
+          navLinks.insertBefore(promptsLink, authNavLink);
+          navLinks.insertBefore(favoritesLink, authNavLink);
+          navLinks.insertBefore(analyticsLink, authNavLink);
+        }
+
+        // Inject links into Mobile navigation
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) {
+          const promptsLink = document.createElement('a');
+          promptsLink.href = 'prompts.html';
+          promptsLink.className = 'mob-link';
+          promptsLink.textContent = 'Prompt Vault';
+
+          const favoritesLink = document.createElement('a');
+          favoritesLink.href = 'favorites.html';
+          favoritesLink.className = 'mob-link';
+          favoritesLink.textContent = '★ Favorites';
+          
+          const analyticsLink = document.createElement('a');
+          analyticsLink.href = 'analytics.html';
+          analyticsLink.className = 'mob-link';
+          analyticsLink.textContent = 'Analytics';
+          
+          mobileMenu.insertBefore(promptsLink, authMobLink);
+          mobileMenu.insertBefore(favoritesLink, authMobLink);
+          mobileMenu.insertBefore(analyticsLink, authMobLink);
+        }
+
+        const setLogout = (el) => {
+          if (!el) return;
+          el.textContent = 'Logout';
+          el.href = '#';
+          el.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+          });
+        };
+        setLogout(authNavLink);
+        setLogout(authMobLink);
+      }
+    });
+  </script>
+</body>
+</html>

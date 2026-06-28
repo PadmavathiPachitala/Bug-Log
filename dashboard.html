@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="login.html" class="nav-link" id="authNavLink">Sign In</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link active">Dashboard</a>
+      <a href="prompts.html" class="mob-link">Prompt Vault</a>
+      <a href="favorites.html" class="mob-link">★ Favorites</a>
+      <a href="analytics.html" class="mob-link">Analytics</a>
+      <a href="login.html" class="mob-link" id="authMobLink">Sign In</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- PAGE HEADER -->
+    <div class="dash-header">
+      <div>
+        <span class="section-tag">// dashboard</span>
+        <h1 class="dash-title">Bug Log</h1>
+        <p class="dash-sub" id="liveDateSub">June 2025 · Live data</p>
+      </div>
+      <div class="flex-row" style="display:flex; gap:10px; align-items:center;">
+        <div class="export-dropdown" style="position:relative; display:inline-block;">
+          <button class="btn btn-ghost" id="exportBtn" style="padding: 10px 14px;">📤 Export Log</button>
+          <div class="export-menu" id="exportMenu" style="display:none; position:absolute; right:0; top:45px; background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius); z-index:200; box-shadow:0 8px 24px rgba(0,0,0,0.4); min-width:140px;">
+            <a href="#" class="export-option" data-format="csv" style="display:block; padding:8px 16px; font-size:0.85rem; color:var(--text); text-align:left; border-bottom:1px solid var(--border);">CSV (.csv)</a>
+            <a href="#" class="export-option" data-format="markdown" style="display:block; padding:8px 16px; font-size:0.85rem; color:var(--text); text-align:left; border-bottom:1px solid var(--border);">Markdown (.md)</a>
+            <a href="#" class="export-option" data-format="pdf" style="display:block; padding:8px 16px; font-size:0.85rem; color:var(--text); text-align:left;">PDF (.pdf)</a>
+          </div>
+        </div>
+        <a href="create-bug.html" class="btn btn-primary">+ New Bug</a>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Bugs</div>
+        <div class="stat-value" id="totalBugsVal">--</div>
+        <div class="stat-trend up">↑ 4 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open</div>
+        <div class="stat-value stat-red" id="openBugsVal">--</div>
+        <div class="stat-trend neutral">3 critical</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Resolved</div>
+        <div class="stat-value stat-green" id="resolvedBugsVal">--</div>
+        <div class="stat-trend up">↑ 73.8% rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. Fix Time</div>
+        <div class="stat-value">2.4h</div>
+        <div class="stat-trend down">↓ 18% vs last mo.</div>
+      </div>
+    </div>
+
+    <!-- SEARCH + FILTERS -->
+    <div class="search-bar-row">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          class="search-input"
+          id="bugSearch"
+          placeholder="Search bugs by title, tags, root cause, prompts, solutions..."
+        />
+        <kbd class="search-kbd">⌘K</kbd>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn btn-ghost" id="toggleFiltersBtn" style="padding: 10px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+          <span>⚙️</span> Advanced Filters
+        </button>
+      </div>
+      <div class="filter-pills">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="open">Open</button>
+        <button class="pill" data-filter="resolved">Resolved</button>
+        <button class="pill" data-filter="favorites">★ Favorites</button>
+        <button class="pill" data-filter="critical">Critical</button>
+      </div>
+    </div>
+
+    <!-- COLLAPSIBLE ADVANCED FILTER PANEL -->
+    <div id="advancedFilterPanel" class="filter-panel" style="display: none; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      <div class="form-row-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">Technology</label>
+          <input type="text" id="filterTech" placeholder="e.g. React, Node.js" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);" />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">Priority</label>
+          <select id="filterPriority" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);">
+            <option value="">All</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">AI Tool</label>
+          <select id="filterAiTool" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);">
+            <option value="">All</option>
+            <option value="Gemini">Gemini</option>
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Claude">Claude</option>
+            <option value="Copilot">GitHub Copilot</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">Status</label>
+          <select id="filterStatus" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);">
+            <option value="">All</option>
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">Start Date</label>
+          <input type="date" id="filterStartDate" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);" />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 6px;">End Date</label>
+          <input type="date" id="filterEndDate" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-3); color: var(--text);" />
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+        <button class="btn btn-ghost" id="clearFiltersBtn" style="padding: 6px 12px; font-size: 0.82rem;">Reset</button>
+        <button class="btn btn-primary" id="applyFiltersBtn" style="padding: 6px 12px; font-size: 0.82rem;">Apply Filters</button>
+      </div>
+    </div>
+
+    <!-- BUG CARDS GRID -->
+    <div class="bugs-grid" id="bugsGrid">
+
+      <!-- Bug 1 -->
+      <a href="bug-detail.html" class="bug-card" data-status="open" data-severity="critical" data-tags="api auth">
+        <div class="bug-card-top">
+          <span class="bug-id">#1042</span>
+          <span class="severity-badge critical">CRITICAL</span>
+          <span class="status-dot open" title="Open"></span>
+        </div>
+        <h3 class="bug-title">JWT token not invalidated on logout</h3>
+        <p class="bug-excerpt">Token remains valid in Redis cache after logout event. Users can continue making authenticated requests post-session.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">auth</span>
+            <span class="tag">api</span>
+            <span class="tag">security</span>
+          </div>
+          <span class="bug-date">Jun 3, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="ai-badge">🤖 AI suggestion attached</span>
+          <span class="bug-time">~3h open</span>
+        </div>
+      </a>
+
+      <!-- Bug 2 -->
+      <a href="bug-detail.html" class="bug-card" data-status="resolved" data-severity="high" data-tags="ui react">
+        <div class="bug-card-top">
+          <span class="bug-id">#1041</span>
+          <span class="severity-badge high">HIGH</span>
+          <span class="status-dot resolved" title="Resolved"></span>
+        </div>
+        <h3 class="bug-title">useEffect infinite loop on profile page</h3>
+        <p class="bug-excerpt">Missing dependency array caused component to re-render on every state update, triggering unbounded API calls.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">react</span>
+            <span class="tag">ui</span>
+            <span class="tag">hooks</span>
+          </div>
+          <span class="bug-date">Jun 2, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="resolved-badge">✔ Resolved in 1.2h</span>
+          <span class="bug-time">fixed</span>
+        </div>
+      </a>
+
+      <!-- Bug 3 -->
+      <a href="bug-detail.html" class="bug-card" data-status="open" data-severity="medium" data-tags="database postgres">
+        <div class="bug-card-top">
+          <span class="bug-id">#1040</span>
+          <span class="severity-badge medium">MEDIUM</span>
+          <span class="status-dot open" title="Open"></span>
+        </div>
+        <h3 class="bug-title">N+1 query on /api/posts endpoint</h3>
+        <p class="bug-excerpt">Each post triggers a separate author lookup query. At scale this hammers Postgres with 300+ queries per request.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">postgres</span>
+            <span class="tag">performance</span>
+            <span class="tag">orm</span>
+          </div>
+          <span class="bug-date">Jun 1, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="ai-badge">🤖 AI suggestion attached</span>
+          <span class="bug-time">~31h open</span>
+        </div>
+      </a>
+
+      <!-- Bug 4 -->
+      <a href="bug-detail.html" class="bug-card" data-status="resolved" data-severity="low" data-tags="css mobile">
+        <div class="bug-card-top">
+          <span class="bug-id">#1039</span>
+          <span class="severity-badge low">LOW</span>
+          <span class="status-dot resolved" title="Resolved"></span>
+        </div>
+        <h3 class="bug-title">Sidebar overlaps content on 375px viewport</h3>
+        <p class="bug-excerpt">Nav sidebar uses fixed px width with no responsive breakpoint. Content gets clipped below 400px screen width.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">css</span>
+            <span class="tag">mobile</span>
+            <span class="tag">layout</span>
+          </div>
+          <span class="bug-date">May 31, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="resolved-badge">✔ Resolved in 0.5h</span>
+          <span class="bug-time">fixed</span>
+        </div>
+      </a>
+
+      <!-- Bug 5 -->
+      <a href="bug-detail.html" class="bug-card" data-status="open" data-severity="critical" data-tags="payments stripe">
+        <div class="bug-card-top">
+          <span class="bug-id">#1038</span>
+          <span class="severity-badge critical">CRITICAL</span>
+          <span class="status-dot open" title="Open"></span>
+        </div>
+        <h3 class="bug-title">Stripe webhook signature validation failing</h3>
+        <p class="bug-excerpt">Webhook endpoint returns 400 on all Stripe events. Payment confirmation emails not sending. Revenue at risk.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">payments</span>
+            <span class="tag">stripe</span>
+            <span class="tag">backend</span>
+          </div>
+          <span class="bug-date">May 30, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="ai-badge">🤖 AI suggestion attached</span>
+          <span class="bug-time">~58h open</span>
+        </div>
+      </a>
+
+      <!-- Bug 6 -->
+      <a href="bug-detail.html" class="bug-card" data-status="resolved" data-severity="high" data-tags="node memory">
+        <div class="bug-card-top">
+          <span class="bug-id">#1037</span>
+          <span class="severity-badge high">HIGH</span>
+          <span class="status-dot resolved" title="Resolved"></span>
+        </div>
+        <h3 class="bug-title">Memory leak in WebSocket event listeners</h3>
+        <p class="bug-excerpt">Socket.io listeners not removed on disconnect. After ~200 connections RSS climbed to 2GB and process crashed.</p>
+        <div class="bug-meta">
+          <div class="bug-tags">
+            <span class="tag">node</span>
+            <span class="tag">websocket</span>
+            <span class="tag">memory</span>
+          </div>
+          <span class="bug-date">May 29, 2025</span>
+        </div>
+        <div class="bug-card-footer">
+          <span class="resolved-badge">✔ Resolved in 4.5h</span>
+          <span class="bug-time">fixed</span>
+        </div>
+      </a>
+
+    </div><!-- /bugs-grid -->
+
+    <!-- EMPTY STATE (hidden by default) -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">🔎</div>
+      <p>No bugs match your search.</p>
+      <button class="btn btn-ghost">Clear search</button>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination-controls" id="paginationControls"></div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo"><span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span></span>
+      <span class="footer-copy">© 2025 BugLog. Built for engineers, by engineers.</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="bug-detail.html">Bug Detail</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

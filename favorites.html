@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Favorites — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link active">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="prompts.html" class="mob-link">Prompt Vault</a>
+      <a href="favorites.html" class="mob-link active">★ Favorites</a>
+      <a href="analytics.html" class="mob-link">Analytics</a>
+      <a href="#" class="mob-link" id="authMobLink">Logout</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- PAGE HEADER -->
+    <div class="dash-header">
+      <div>
+        <span class="section-tag">// curated collection</span>
+        <h1 class="dash-title">Favorites</h1>
+        <p class="dash-sub">Quick access to your starred bugs and highly rated AI prompts</p>
+      </div>
+    </div>
+
+    <!-- TAB SELECTION -->
+    <div class="filter-pills" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; gap: 16px;">
+      <button class="pill active" id="bugsTabBtn" style="font-size: 1rem; padding: 10px 20px;">🐛 Favorited Bugs</button>
+      <button class="pill" id="promptsTabBtn" style="font-size: 1rem; padding: 10px 20px;">⚡ Starred Prompts</button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <div id="bugsTabContent">
+      <div class="bugs-grid" id="bugsGrid">
+        <!-- Loaded dynamically -->
+      </div>
+      <div class="empty-state" id="bugsEmptyState" style="display:none">
+        <div class="empty-icon">★</div>
+        <p>You haven't favorited any bugs yet.</p>
+        <a href="dashboard.html" class="btn btn-primary" style="margin-top: 12px; display: inline-block;">Browse Dashboard</a>
+      </div>
+    </div>
+
+    <div id="promptsTabContent" style="display: none;">
+      <div class="bugs-grid" id="promptsGrid">
+        <!-- Loaded dynamically -->
+      </div>
+      <div class="empty-state" id="promptsEmptyState" style="display:none">
+        <div class="empty-icon">★</div>
+        <p>You haven't starred any prompts yet.</p>
+        <a href="prompts.html" class="btn btn-primary" style="margin-top: 12px; display: inline-block;">Browse Prompt Vault</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo"><span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span></span>
+      <span class="footer-copy">© 2025 BugLog. Built for engineers, by engineers.</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="prompts.html">Prompt Vault</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout triggers
+      const setupLogout = (el) => {
+        if (!el) return;
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+      };
+      setupLogout(document.getElementById('authNavLink'));
+      setupLogout(document.getElementById('authMobLink'));
+
+      // Hamburger menu
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+          mobileMenu.classList.toggle('open');
+        });
+      }
+
+      // Tab switcher
+      const bugsTabBtn = document.getElementById('bugsTabBtn');
+      const promptsTabBtn = document.getElementById('promptsTabBtn');
+      const bugsTabContent = document.getElementById('bugsTabContent');
+      const promptsTabContent = document.getElementById('promptsTabContent');
+
+      bugsTabBtn.addEventListener('click', () => {
+        bugsTabBtn.classList.add('active');
+        promptsTabBtn.classList.remove('active');
+        bugsTabContent.style.display = 'block';
+        promptsTabContent.style.display = 'none';
+      });
+
+      promptsTabBtn.addEventListener('click', () => {
+        promptsTabBtn.classList.add('active');
+        bugsTabBtn.classList.remove('active');
+        promptsTabContent.style.display = 'block';
+        bugsTabContent.style.display = 'none';
+      });
+
+      // Load Favorites
+      await loadFavorites();
+    });
+
+    async function loadFavorites() {
+      // 1. Load favorited bugs
+      const bugsRes = await getBugs('filter=favorites');
+      const bugsGrid = document.getElementById('bugsGrid');
+      const bugsEmptyState = document.getElementById('bugsEmptyState');
+      
+      if (bugsRes.success) {
+        const bugs = bugsRes.data;
+        if (bugs.length === 0) {
+          bugsEmptyState.style.display = 'block';
+          bugsGrid.style.display = 'none';
+        } else {
+          bugsEmptyState.style.display = 'none';
+          bugsGrid.style.display = 'grid';
+          bugsGrid.innerHTML = bugs.map(bug => {
+            const shortId = '#' + bug._id.slice(-4);
+            const severity = bug.priority || bug.severity || 'low';
+            const tech = bug.technology || 'N/A';
+            const isResolved = bug.status === 'resolved';
+
+            return `
+              <a href="bug-detail.html?id=${bug._id}" class="bug-card">
+                <div class="bug-card-top">
+                  <span class="bug-id">${shortId}</span>
+                  <span class="severity-badge ${severity}">${severity.toUpperCase()}</span>
+                  <span class="status-dot ${bug.status}" title="${bug.status}"></span>
+                </div>
+                <h3 class="bug-title">${bug.title}</h3>
+                <p class="bug-excerpt">${bug.errorMessage ? bug.errorMessage.slice(0, 120) + '...' : 'No error trace provided.'}</p>
+                <div class="bug-meta">
+                  <div class="bug-tags">
+                    ${(bug.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
+                  </div>
+                  <span class="bug-date">${new Date(bug.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div class="bug-card-footer">
+                  ${isResolved ? `<span class="resolved-badge">✔ Resolved</span>` : `<span class="ai-badge">🤖 Open</span>`}
+                  <span class="bug-time">${tech}</span>
+                </div>
+              </a>
+            `;
+          }).join('');
+        }
+      }
+
+      // 2. Load favorited prompts
+      const promptsRes = await getPrompts('isFavorited=true');
+      const promptsGrid = document.getElementById('promptsGrid');
+      const promptsEmptyState = document.getElementById('promptsEmptyState');
+
+      if (promptsRes.success) {
+        const prompts = promptsRes.data;
+        if (prompts.length === 0) {
+          promptsEmptyState.style.display = 'block';
+          promptsGrid.style.display = 'none';
+        } else {
+          promptsEmptyState.style.display = 'none';
+          promptsGrid.style.display = 'grid';
+          promptsGrid.innerHTML = prompts.map(prompt => {
+            return `
+              <div class="bug-card prompt-card" style="display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;" onclick="window.location.href='prompt-detail.html?id=${prompt._id}'">
+                <div>
+                  <div class="bug-card-top">
+                    <span class="bug-id">⚡ Prompt</span>
+                    <span class="severity-badge medium" style="background:rgba(94, 156, 245, 0.1); color:var(--blue); border-color:rgba(94,156,245,0.2);">${prompt.aiTool || 'AI Tool'}</span>
+                    <span style="color:var(--yellow); font-size:1.1rem;">★</span>
+                  </div>
+                  <h3 class="bug-title" style="margin-bottom:8px;">${prompt.title}</h3>
+                  <p class="bug-excerpt" style="font-family:var(--mono); color:var(--cyan); font-size:0.82rem; line-height:1.4; max-height:80px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; margin-bottom:12px;">"${prompt.promptText}"</p>
+                </div>
+                <div>
+                  <div class="bug-meta" style="margin-bottom:8px;">
+                    <div class="bug-tags">
+                      ${(prompt.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
+                    </div>
+                  </div>
+                  <div class="bug-card-footer" style="padding-top:8px; border-top:1px solid var(--border); font-size:0.78rem;">
+                    <span>Effectiveness: <strong>${prompt.effectivenessRating || 'N/A'}/5</strong></span>
+                    <span class="bug-time">${new Date(prompt.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

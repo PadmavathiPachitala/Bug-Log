@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Prompt — BugLog</title>
+  <script>
+    if (!localStorage.getItem('token')) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="prompts.html" class="nav-link">Prompt Vault</a>
+        <a href="favorites.html" class="nav-link">★ Favorites</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link" id="authNavLink">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="create-container">
+      <h1 class="section-title" style="margin-bottom: 24px;">Edit Prompt</h1>
+      <div class="error-msg" id="errorMsg"></div>
+      <form id="editPromptForm">
+        <div class="form-group">
+          <label>Prompt Text</label>
+          <textarea id="prompt" required placeholder="Write or paste your AI prompt here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>AI Tool</label>
+          <select id="aiTool" required>
+            <option value="Gemini">Gemini</option>
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Claude">Claude</option>
+            <option value="GitHub Copilot">GitHub Copilot</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" id="category" placeholder="e.g. Refactoring, Debugging, SQL, CSS" />
+        </div>
+        <div class="form-group">
+          <label>Tags (comma separated)</label>
+          <input type="text" id="tags" placeholder="e.g. auth, api, hooks" />
+        </div>
+        <div class="form-group">
+          <label>Effectiveness Rating</label>
+          <select id="effectivenessRating">
+            <option value="5">★★★★★ (Highly Effective)</option>
+            <option value="4">★★★★☆ (Mostly Effective)</option>
+            <option value="3">★★★☆☆ (Average)</option>
+            <option value="2">★★☆☆☆ (Not Very Effective)</option>
+            <option value="1">★☆☆☆☆ (Failed/Useless)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Outcome / AI Response (optional)</label>
+          <textarea id="outcome" placeholder="Describe the result or paste a summary..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>AI Suggested Solution (optional)</label>
+          <textarea id="aiSuggestion" placeholder="What code or fix did the AI suggest?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Verified Final Solution (optional)</label>
+          <textarea id="verifiedSolution" placeholder="What was the actual final solution?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Notes / Lessons (optional)</label>
+          <textarea id="notes" placeholder="Any special modifications or context required to make this prompt work?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('authNavLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const promptId = params.get('id');
+
+      if (!promptId) {
+        document.getElementById('errorMsg').textContent = 'Prompt ID missing from URL.';
+        document.getElementById('errorMsg').style.display = 'block';
+        return;
+      }
+
+      // Fetch prompt details
+      const res = await getPrompt(promptId);
+      if (res.success) {
+        const prompt = res.data;
+        document.getElementById('prompt').value = prompt.prompt || '';
+        document.getElementById('aiTool').value = prompt.aiTool || 'Gemini';
+        document.getElementById('category').value = prompt.category || '';
+        document.getElementById('tags').value = (prompt.tags || []).join(', ');
+        document.getElementById('effectivenessRating').value = prompt.effectivenessRating || 3;
+        document.getElementById('outcome').value = prompt.outcome || '';
+        document.getElementById('aiSuggestion').value = prompt.aiSuggestion || '';
+        document.getElementById('verifiedSolution').value = prompt.verifiedSolution || '';
+        document.getElementById('notes').value = prompt.notes || '';
+      } else {
+        document.getElementById('errorMsg').textContent = `Failed to load prompt: ${res.message}`;
+        document.getElementById('errorMsg').style.display = 'block';
+      }
+
+      // Submit changes
+      document.getElementById('editPromptForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const promptData = {
+          prompt: document.getElementById('prompt').value,
+          aiTool: document.getElementById('aiTool').value,
+          category: document.getElementById('category').value,
+          tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t),
+          effectivenessRating: parseInt(document.getElementById('effectivenessRating').value, 10),
+          outcome: document.getElementById('outcome').value,
+          aiSuggestion: document.getElementById('aiSuggestion').value,
+          verifiedSolution: document.getElementById('verifiedSolution').value,
+          notes: document.getElementById('notes').value,
+        };
+
+        const updateRes = await updatePrompt(promptId, promptData);
+        if (updateRes.success) {
+          window.location.href = `prompt-detail.html?id=${promptId}`;
+        } else {
+          const err = document.getElementById('errorMsg');
+          err.textContent = updateRes.message || 'Failed to update prompt';
+          err.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
