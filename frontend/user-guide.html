@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Guide — BugLog</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="dashboard-page">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="user-guide.html" class="nav-link active">User Guide</a>
+        <a href="login.html" class="nav-link" id="authNavLink">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html" class="mob-link">Home</a>
+      <a href="dashboard.html" class="mob-link">Dashboard</a>
+      <a href="user-guide.html" class="mob-link active">User Guide</a>
+      <a href="login.html" class="mob-link" id="authMobLink">Login</a>
+    </div>
+  </nav>
+
+  <main class="container" style="max-width: 900px; padding: 40px 20px; color: var(--text);">
+    
+    <div style="margin-bottom: 40px;">
+      <span class="section-tag">// documentation</span>
+      <h1 class="dash-title" style="margin-top: 10px; font-size: 2.5rem;">User Guide & Documentation</h1>
+      <p class="dash-sub">Learn how to maximize your productivity and manage your debugging knowledge base with BugLog.</p>
+    </div>
+
+    <!-- GUIDE SECTION -->
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+      
+      <!-- Section 1 -->
+      <section style="background: var(--bg-2); padding: 30px; border: 1px solid var(--border); border-radius: var(--radius);">
+        <h2 style="color: var(--primary); margin-top: 0; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">🔑</span> 01. Getting Started: Sign In
+        </h2>
+        <p style="color: var(--text-sub); line-height: 1.6; margin-top: 10px;">
+          BugLog supports automatic user onboarding to make starting out frictionless.
+        </p>
+        <ul style="color: var(--text-sub); line-height: 1.6; padding-left: 20px; margin-top: 10px;">
+          <li>Go to the <a href="login.html" style="color: var(--primary); text-decoration: none;">Login Page</a>.</li>
+          <li>Enter any email address and a password (minimum 6 characters).</li>
+          <li>If the email is new, the system will **automatically register it** and log you in immediately. If it exists, it will log you in normally.</li>
+        </ul>
+      </section>
+
+      <!-- Section 2 -->
+      <section style="background: var(--bg-2); padding: 30px; border: 1px solid var(--border); border-radius: var(--radius);">
+        <h2 style="color: var(--primary); margin-top: 0; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">📝</span> 02. Logging a New Bug
+        </h2>
+        <p style="color: var(--text-sub); line-height: 1.6; margin-top: 10px;">
+          Record bugs as you solve them to build your personal searchable index.
+        </p>
+        <ul style="color: var(--text-sub); line-height: 1.6; padding-left: 20px; margin-top: 10px;">
+          <li>Click **+ New Bug** on the Dashboard.</li>
+          <li><strong>Error Message / Stack Trace:</strong> Paste raw terminal or console error outputs.</li>
+          <li><strong>Root Cause / Hypothesis:</strong> Summarize why it failed.</li>
+          <li><strong>Verified Solution:</strong> Describe what you did to resolve it and paste any code snippets.</li>
+          <li><strong>Takeaways:</strong> Detail what you'll tell your future self (great for technical interview prep!).</li>
+        </ul>
+      </section>
+
+      <!-- Section 3 -->
+      <section style="background: var(--bg-2); padding: 30px; border: 1px solid var(--border); border-radius: var(--radius);">
+        <h2 style="color: var(--primary); margin-top: 0; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">🔍</span> 03. Search & Filters
+        </h2>
+        <p style="color: var(--text-sub); line-height: 1.6; margin-top: 10px;">
+          Find any previously solved bug instantly to stop solving the same problems twice.
+        </p>
+        <ul style="color: var(--text-sub); line-height: 1.6; padding-left: 20px; margin-top: 10px;">
+          <li>Use the search bar to query keywords inside title, stack trace, solutions, or tags.</li>
+          <li>Click **⚙️ Advanced Filters** to filter logs by specific Technology, Priority, AI Tool used, or Creation Dates.</li>
+          <li>Toggle the quick filter pills (*All, Open, Resolved, ★ Favorites, Critical*) for rapid filtering.</li>
+        </ul>
+      </section>
+
+      <!-- Section 4 -->
+      <section style="background: var(--bg-2); padding: 30px; border: 1px solid var(--border); border-radius: var(--radius);">
+        <h2 style="color: var(--primary); margin-top: 0; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">🤖</span> 04. AI Prompt Vault
+        </h2>
+        <p style="color: var(--text-sub); line-height: 1.6; margin-top: 10px;">
+          Save and organize the prompts that successfully debugged your code.
+        </p>
+        <ul style="color: var(--text-sub); line-height: 1.6; padding-left: 20px; margin-top: 10px;">
+          <li>Navigate to the **Prompt Vault** from the navbar.</li>
+          <li>Save prompts with target AI tools (e.g., *Gemini, Claude*) and effectiveness ratings.</li>
+          <li>Click the copy icon on any prompt card to copy it to your clipboard instantly.</li>
+        </ul>
+      </section>
+
+      <!-- Section 5 -->
+      <section style="background: var(--bg-2); padding: 30px; border: 1px solid var(--border); border-radius: var(--radius);">
+        <h2 style="color: var(--primary); margin-top: 0; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">📊</span> 05. Analytics & Exports
+        </h2>
+        <p style="color: var(--text-sub); line-height: 1.6; margin-top: 10px;">
+          Track your learning progress and back up your logs.
+        </p>
+        <ul style="color: var(--text-sub); line-height: 1.6; padding-left: 20px; margin-top: 10px;">
+          <li>Check the **Analytics** page to visualize trends, tech distributions, and heuristic AI diagnostics.</li>
+          <li>Click **Export Log** on the Dashboard to download your complete history in **CSV, Markdown, or PDF** formats.</li>
+        </ul>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo"><span class="logo-bracket">[</span>BugLog<span class="logo-bracket">]</span></span>
+      <span class="footer-copy">© 2025 BugLog. Built for engineers, by engineers.</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="user-guide.html">User Guide</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authNavLink = document.getElementById('authNavLink');
+      const authMobLink = document.getElementById('authMobLink');
+      if (isAuthenticated()) {
+        const injectLinks = (parent, beforeElement, className) => {
+          const createLink = (href, text) => {
+            const a = document.createElement('a');
+            a.href = href;
+            a.className = className;
+            a.textContent = text;
+            return a;
+          };
+          parent.insertBefore(createLink('prompts.html', 'Prompt Vault'), beforeElement);
+          parent.insertBefore(createLink('favorites.html', '★ Favorites'), beforeElement);
+          parent.insertBefore(createLink('analytics.html', 'Analytics'), beforeElement);
+        };
+
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) injectLinks(navLinks, authNavLink, 'nav-link');
+
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) injectLinks(mobileMenu, authMobLink, 'mob-link');
+
+        const setLogout = (el) => {
+          if (!el) return;
+          el.textContent = 'Logout';
+          el.href = '#';
+          el.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+          });
+        };
+        setLogout(authNavLink);
+        setLogout(authMobLink);
+      }
+    });
+  </script>
+</body>
+</html>
