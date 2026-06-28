@@ -58,6 +58,10 @@
           <li>Enter any email address and a password (minimum 6 characters).</li>
           <li>If the email is new, the system will **automatically register it** and log you in immediately. If it exists, it will log you in normally.</li>
         </ul>
+        <div style="background: var(--bg-3); border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.85rem;">
+          <span style="color: var(--primary); font-weight: bold;">💡 Example:</span><br/>
+          Type <code style="color: var(--text);">developer@gmail.com</code> and password <code style="color: var(--text);">securepass123</code>. If this email is not in the database, BugLog automatically registers it and redirects you to the dashboard.
+        </div>
       </section>
 
       <!-- Section 2 -->
@@ -75,6 +79,15 @@
           <li><strong>Verified Solution:</strong> Describe what you did to resolve it and paste any code snippets.</li>
           <li><strong>Takeaways:</strong> Detail what you'll tell your future self (great for technical interview prep!).</li>
         </ul>
+        <div style="background: var(--bg-3); border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 4px; font-size: 0.85rem; line-height: 1.5;">
+          <span style="color: var(--primary); font-weight: bold; font-family: 'Space Mono', monospace;">💡 Example Bug Log:</span><br/>
+          <ul style="padding-left: 15px; margin-top: 5px; list-style-type: square; color: var(--text-sub);">
+            <li><strong>Title:</strong> useEffect Infinite Loop in React</li>
+            <li><strong>Error Message:</strong> <code style="font-family: 'Space Mono', monospace; color: var(--text);">Maximum update depth exceeded. This can happen when a component repeatedly calls setState...</code></li>
+            <li><strong>Root Cause:</strong> Forgot to add the dependency array <code style="font-family: 'Space Mono', monospace; color: var(--text);">[]</code> as the second argument to useEffect, causing it to run on every state change.</li>
+            <li><strong>Solution:</strong> Added <code style="font-family: 'Space Mono', monospace; color: var(--text);">, [dependencies])</code> at the end of the hook.</li>
+          </ul>
+        </div>
       </section>
 
       <!-- Section 3 -->
@@ -90,6 +103,10 @@
           <li>Click **⚙️ Advanced Filters** to filter logs by specific Technology, Priority, AI Tool used, or Creation Dates.</li>
           <li>Toggle the quick filter pills (*All, Open, Resolved, ★ Favorites, Critical*) for rapid filtering.</li>
         </ul>
+        <div style="background: var(--bg-3); border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.85rem;">
+          <span style="color: var(--primary); font-weight: bold;">💡 Search Example:</span><br/>
+          To find database connection issues, type <code style="color: var(--text);">"MongoNetworkError"</code> in the search bar. Use the <strong>⚙️ Advanced Filters</strong> to limit the search to <code style="color: var(--text);">Node.js</code> technology with <code style="color: var(--text);">Critical</code> priority.
+        </div>
       </section>
 
       <!-- Section 4 -->
@@ -105,6 +122,10 @@
           <li>Save prompts with target AI tools (e.g., *Gemini, Claude*) and effectiveness ratings.</li>
           <li>Click the copy icon on any prompt card to copy it to your clipboard instantly.</li>
         </ul>
+        <div style="background: var(--bg-3); border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.4;">
+          <span style="color: var(--primary); font-weight: bold;">💡 Saved Prompt Example:</span><br/>
+          <span style="color: var(--text-sub);">"I have the following Node.js stack trace [paste stack trace]. Identify the line causing the null reference and write a safe optional chaining fallback."</span>
+        </div>
       </section>
 
       <!-- Section 5 -->
@@ -119,6 +140,12 @@
           <li>Check the **Analytics** page to visualize trends, tech distributions, and heuristic AI diagnostics.</li>
           <li>Click **Export Log** on the Dashboard to download your complete history in **CSV, Markdown, or PDF** formats.</li>
         </ul>
+        <div style="background: var(--bg-3); border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.4;">
+          <span style="color: var(--primary); font-weight: bold;">💡 Export Formats:</span><br/>
+          <span style="color: var(--text-sub);">* **CSV:** Raw data for importing into Excel or Google Sheets.<br/>
+          * **Markdown:** Beautifully formatted log entries ready for a GitHub wiki.<br/>
+          * **PDF:** Structured, print-ready diagnostic reports for team code reviews.</span>
+        </div>
       </section>
 
     </div>
