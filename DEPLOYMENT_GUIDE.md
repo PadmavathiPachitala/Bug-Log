@@ -114,8 +114,8 @@ The frontend is a static site that is optimized to build and inject the API URL 
 3.  Import your GitHub repository.
 4.  Configure the build and deployment settings:
     *   **Framework Preset:** `Other` (or `None`)
-    *   **Root Directory:** Keep as the root `/`
-    *   **Build Command:** Vercel will automatically detect `npm run build` from our [package.json](file:///c:/Users/padhu/Downloads/BUGLOG/package.json), which runs the [build.js](file:///c:/Users/padhu/Downloads/BUGLOG/build.js) script to inject the backend API URL.
+    *   **Root Directory:** Set to `frontend` (so Vercel builds from the `frontend` folder)
+    *   **Build Command:** Vercel will automatically detect `npm run build` from our [package.json](file:///c:/Users/padhu/Downloads/BUGLOG/frontend/package.json) inside the `frontend` directory, which runs the [build.js](file:///c:/Users/padhu/Downloads/BUGLOG/frontend/build.js) script to inject the backend API URL.
 5.  Configure Environment Variables:
     *   Add a new environment variable:
         *   **Name:** `API_BASE`
