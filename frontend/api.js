@@ -44,7 +44,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     const res = await fetch(`${API_BASE}${endpoint}`, options);
 
     // If the token is invalid or expired, the server will return 401
-    if (res.status === 401) {
+    if (res.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/register') {
       clearToken();
       window.location.href = 'login.html';
       return { success: false, message: 'Session expired. Please log in again.' };
